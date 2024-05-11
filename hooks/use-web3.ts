@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { ethers } from "ethers";
+import { BrowserProvider, Contract, JsonRpcSigner } from "ethers";
 
 const CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"; // Replace with actual deployed contract address
 const CONTRACT_ABI = [
@@ -11,9 +11,10 @@ export function useWeb3() {
   const getContract = useCallback(async () => {
     if (typeof window.ethereum !== "undefined") {
       await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      return new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+      const provider = new BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      return new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
     }
     throw new Error("Ethereum provider not found");
   }, []);
