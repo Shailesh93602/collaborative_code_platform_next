@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
       bufferutil: "commonjs bufferutil",
       canvas: "commonjs canvas",
       "coffee-script": "commonjs coffee-script",
-      "onnxruntime-node": "commonjs onnxruntime-node",
     });
     return config;
   },

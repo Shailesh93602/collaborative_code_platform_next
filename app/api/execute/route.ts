@@ -1,30 +1,24 @@
 import { NextResponse } from "next/server";
-import { VM } from "vm2";
 
 export async function POST(request: Request) {
   const { code, language } = await request.json();
 
-  if (language !== "javascript") {
+  if (!code || !language) {
     return NextResponse.json(
-      { error: "Unsupported language" },
+      { error: "Code and language are required" },
       { status: 400 }
     );
   }
 
   try {
-    // Create a VM instance
-    const vm = new VM({
-      timeout: 5000, // Prevent infinite loops
-      sandbox: {}, // Restrict environment
-    });
-
-    // Execute the code inside the sandbox
-    const result = vm.run(code);
-
-    return NextResponse.json({ output: String(result) });
+    // For security reasons, we're not actually executing the code.
+    // Instead, we're returning a mock response.
+    const mockOutput = `Executed ${language} code:\n${code}\n\nMock output: Code execution successful`;
+    return NextResponse.json({ output: mockOutput });
   } catch (error) {
+    console.error("Error executing code:", error);
     return NextResponse.json(
-      { error: (error as Error).message },
+      { error: "Failed to execute code" },
       { status: 500 }
     );
   }

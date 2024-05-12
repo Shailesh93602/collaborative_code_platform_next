@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Client } from "@gradio/client";
+import { AIService } from "@/lib/services/ai-service";
 
 export async function POST(request: Request) {
   const { query } = await request.json();
@@ -9,12 +9,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const client = await Client.connect("Qwen/Qwen2.5-Coder-Artifacts");
-    const result = await client.predict("/generation_code", {
-      query: query,
-    });
-
-    return NextResponse.json({ response: result.data[0] });
+    const response = await AIService.getAIResponse(query);
+    return NextResponse.json({ response });
   } catch (error) {
     console.error("Error in AI chat:", error);
     return NextResponse.json(
