@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { BrowserProvider, Contract, JsonRpcSigner } from "ethers";
+import { BrowserProvider, Contract } from "ethers";
 
 const CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"; // Replace with actual deployed contract address
 const CONTRACT_ABI = [

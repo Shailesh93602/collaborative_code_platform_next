@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
-// import { MonacoBinding } from "y-monaco";
 import * as Y from "yjs";
 import { useCollaborationContext } from "@/components/collaboration-provider";
 import { EditorInstance } from "@/types/global";
@@ -16,22 +14,15 @@ export function useCollaboration() {
       if (yDoc && provider) {
         if (type === "monaco" && data instanceof Object) {
           const yText = yDoc.getText("monaco");
-          // new MonacoBinding(
-          //   yText,
-          //   (data as EditorInstance).getModel()!,
-          //   new Set([data as EditorInstance]),
-          //   provider.awareness
-          // );
+          // Implement Monaco binding here
         } else if (type === "whiteboard") {
           const yArray = yDoc.getArray("whiteboard");
           if (typeof data === "function") {
-            // If data is a function, it's a listener for changes
             yArray.observe(() => {
               const newData = yArray.toArray();
               (data as CollaborativeCallback)?.(newData);
             });
           } else if (Array.isArray(data)) {
-            // If data is an array, it's new data to be added
             yArray.delete(0, yArray.length);
             yArray.insert(0, data);
           }

@@ -7,8 +7,9 @@ const nextConfig: NextConfig = {
       "utf-8-validate": "commonjs utf-8-validate",
       bufferutil: "commonjs bufferutil",
       canvas: "commonjs canvas",
+      "coffee-script": "commonjs coffee-script",
+      "onnxruntime-node": "commonjs onnxruntime-node",
     });
-    // config.infrastructureLogging = { debug: /PackFileCache/ };
     return config;
   },
 };

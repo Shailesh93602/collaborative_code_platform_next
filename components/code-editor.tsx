@@ -6,22 +6,30 @@ import { useCollaboration } from "@/hooks/use-collaboration";
 import { useAI } from "@/hooks/use-ai";
 import { EditorInstance, AICodeSuggestion } from "@/types/global";
 
-export function CodeEditor() {
-  const [code, setCode] = useState<string>("// Write your code here");
+export function CodeEditor({
+  value,
+  onChange,
+  className,
+}: {
+  value: string;
+  onChange: (code: string) => void;
+  className?: string;
+}) {
+  const [code, setCode] = useState<string>(value);
   const editorRef = useRef<EditorInstance | null>(null);
   const { collaborativeEdit, onCursorChange } = useCollaboration();
   const { getAISuggestions } = useAI();
 
   const handleEditorDidMount = (editor: EditorInstance, monaco: Monaco) => {
-    console.log(monaco);
     editorRef.current = editor;
     editor.onDidChangeCursorPosition(onCursorChange);
-    collaborativeEdit("editor", editor);
+    collaborativeEdit("monaco", editor);
   };
 
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setCode(value);
+      onChange(value);
     }
   };
 
@@ -41,9 +49,9 @@ export function CodeEditor() {
   }, [code, getAISuggestions]);
 
   return (
-    <div className="border rounded-lg overflow-hidden">
+    <div className={`border rounded-lg overflow-hidden ${className}`}>
       <Editor
-        height="60vh"
+        height="100%"
         defaultLanguage="javascript"
         value={code}
         onChange={handleEditorChange}

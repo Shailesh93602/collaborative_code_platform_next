@@ -1,36 +1,26 @@
 import { useCallback } from "react";
-import OpenAI from "openai";
 import { AICodeSuggestion } from "@/types/global";
-
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
 
 export function useAI() {
   const getAISuggestions = useCallback(
     async (code: string): Promise<AICodeSuggestion[]> => {
       try {
-        const response = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are an AI assistant that provides code suggestions. Respond with only the suggested code changes in a JSON format with 'range' and 'text' properties.",
-            },
-            {
-              role: "user",
-              content: `Suggest improvements for this code:\n\n${code}`,
-            },
-          ],
-          max_tokens: 150,
+        const response = await fetch("/api/ai/suggestions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code }),
         });
 
-        const suggestion = JSON.parse(
-          response.choices[0].message.content || "[]"
-        );
-        return suggestion;
+        console.log("🚀 ~ file: use-ai.ts:17 ~ response:", response);
+
+        if (!response.ok) {
+          throw new Error("Failed to get AI suggestions");
+        }
+
+        const data = await response.json();
+        return data.suggestions;
       } catch (error) {
         console.error("Error getting AI suggestions:", error);
         return [];
@@ -41,26 +31,23 @@ export function useAI() {
 
   const getAIResponse = useCallback(async (query: string): Promise<string> => {
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are an AI assistant for a collaborative code platform. Provide helpful and concise responses.",
-          },
-          { role: "user", content: query },
-        ],
-        max_tokens: 150,
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
       });
 
-      return (
-        response.choices[0].message.content ||
-        "I'm sorry, I couldn't generate a response."
-      );
+      if (!response.ok) {
+        throw new Error("Failed to get AI response");
+      }
+
+      const data = await response.json();
+      return data.response;
     } catch (error) {
       console.error("Error getting AI response:", error);
-      return "I'm sorry, there was an error generating a response.";
+      return "I'm sorry, I encountered an error while processing your request.";
     }
   }, []);
 

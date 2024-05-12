@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CollaborationProvider } from "@/components/collaboration-provider";
-import { AIProvider } from "@/components/ai-provider";
 import { Web3Provider } from "@/components/web3-provider";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -25,17 +24,15 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <Web3Provider>
-            <AIProvider>
-              <CollaborationProvider>
-                {children}
-                <Toaster />
-              </CollaborationProvider>
-            </AIProvider>
+            <CollaborationProvider>
+              {children}
+              <Toaster />
+            </CollaborationProvider>
           </Web3Provider>
         </ThemeProvider>
       </body>

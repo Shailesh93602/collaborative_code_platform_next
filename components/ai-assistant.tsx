@@ -1,4 +1,3 @@
-// components/ai-assistant.tsx
 "use client";
 
 import { FormEvent, useState } from "react";
@@ -7,24 +6,41 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAI } from "@/hooks/use-ai";
 
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 export function AIAssistant() {
   const [query, setQuery] = useState("");
-  const [conversation, setConversation] = useState<
-    { role: string; content: string }[]
-  >([]);
+  const [conversation, setConversation] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { getAIResponse } = useAI();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!query.trim()) return;
+    if (!query.trim() || isLoading) return;
 
-    const userMessage = { role: "user", content: query };
+    const userMessage: Message = { role: "user", content: query };
     setConversation((prev) => [...prev, userMessage]);
     setQuery("");
+    setIsLoading(true);
 
-    const aiResponse = await getAIResponse(query);
-    const aiMessage = { role: "assistant", content: aiResponse };
-    setConversation((prev) => [...prev, aiMessage]);
+    try {
+      const aiResponse = await getAIResponse(query);
+      const aiMessage: Message = { role: "assistant", content: aiResponse };
+      setConversation((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      const errorMessage: Message = {
+        role: "assistant",
+        content:
+          "I'm sorry, I encountered an error while processing your request.",
+      };
+      setConversation((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,8 +69,11 @@ export function AIAssistant() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Ask the AI assistant..."
+          disabled={isLoading}
         />
-        <Button type="submit">Send</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Sending..." : "Send"}
+        </Button>
       </form>
     </div>
   );
