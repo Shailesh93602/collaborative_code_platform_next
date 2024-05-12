@@ -1,10 +1,5 @@
+import { Client } from "@gradio/client";
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
-
-const openai = new OpenAI();
-// {
-//   apiKey: process.env.OPENAI_API_KEY,
-// }
 
 export async function POST(request: Request) {
   const { code } = await request.json();
@@ -14,23 +9,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "o1-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an AI assistant that provides code suggestions. Respond with only the suggested code changes in a JSON format with 'range' and 'text' properties.",
-        },
-        {
-          role: "user",
-          content: `Suggest improvements for this code:\n\n${code}`,
-        },
-      ],
-      max_tokens: 150,
+    const client = await Client.connect("Qwen/Qwen2.5-Coder-Artifacts");
+    const result = await client.predict("/generation_code", {
+      query: code + " Provide me suggestions for this code",
     });
 
-    const suggestions = JSON.parse(response.choices[0].message.content || "[]");
+    const suggestions = JSON.parse(result.data[0]);
     return NextResponse.json({ suggestions });
   } catch (error) {
     console.error("Error in AI suggestions:", error);
