@@ -1,4 +1,3 @@
-//components/code-explainer.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,7 +13,7 @@ export function CodeExplainer({ code }: { readonly code: string }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true); // Set mounted to true when the component has mounted
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -25,7 +24,6 @@ export function CodeExplainer({ code }: { readonly code: string }) {
     }, 1000);
 
     return () => clearTimeout(debounce);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
   const generateExplanationAndDocs = async () => {

@@ -72,7 +72,6 @@ export function CodeVisualizer({ code }: { readonly code: string }) {
     const treeLayout = tree<ASTNode>().size([height, width - 200]);
     const treeData = treeLayout(root);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const link = linkHorizontal<any, any>()
       .x((d) => d.y)
       .y((d) => d.x);

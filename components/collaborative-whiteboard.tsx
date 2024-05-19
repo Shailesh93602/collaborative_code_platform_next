@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -16,7 +15,6 @@ export function CollaborativeWhiteboard() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Initialize the Fabric.js Canvas
     const canvas = new Canvas("whiteboard", {
       isDrawingMode: true,
       backgroundColor: "#ffffff",
@@ -28,7 +26,6 @@ export function CollaborativeWhiteboard() {
     }
     canvasRef.current = canvas;
 
-    // Handle collaborative updates
     const handleCollaborativeChanges = (objects: any) => {
       canvas.clear();
       canvas.loadFromJSON(objects, () => canvas.renderAll());

@@ -49,25 +49,22 @@ export function LanguageSelector() {
   };
 
   return (
-    <div className="flex items-center space-x-2">
-      <span className="font-semibold">Language:</span>
-      <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select language" />
-        </SelectTrigger>
-        <SelectContent>
-          {LANGUAGES.map((lang) => (
-            <SelectItem key={lang.id} value={lang.id}>
-              {lang.name}
-            </SelectItem>
-          ))}
-          {customLanguages.map((lang: User) => (
-            <SelectItem key={lang.id} value={lang.id}>
-              {lang.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select language" />
+      </SelectTrigger>
+      <SelectContent>
+        {LANGUAGES.map((lang) => (
+          <SelectItem key={lang.id} value={lang.id}>
+            {lang.name}
+          </SelectItem>
+        ))}
+        {customLanguages.map((lang: User) => (
+          <SelectItem key={lang.id} value={lang.id}>
+            {lang.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

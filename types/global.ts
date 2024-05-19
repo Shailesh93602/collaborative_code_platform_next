@@ -1,20 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export interface User {
-  id: string;
-  name: string;
-  avatar: string;
-  status: string;
-}
+import { editor } from "monaco-editor";
 
-export interface CodeVersion {
-  hash: string;
-  message: string;
-  timestamp: number;
-}
-
-export interface AIResponse {
-  content: string;
-}
+export type EditorInstance = editor.IStandaloneCodeEditor;
 
 export interface AICodeSuggestion {
   range: {
@@ -26,4 +12,9 @@ export interface AICodeSuggestion {
   text: string;
 }
 
-export type EditorInstance = any;
+export interface User {
+  id: string;
+  name: string;
+  avatar?: string;
+  status: string;
+}

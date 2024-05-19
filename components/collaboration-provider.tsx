@@ -1,4 +1,3 @@
-// components/collaboration-provider.tsx
 "use client";
 
 import {

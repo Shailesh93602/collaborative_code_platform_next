@@ -21,7 +21,6 @@ export function CodeEditor({
   const { getAISuggestions } = useAI();
 
   const handleEditorDidMount = (editor: EditorInstance, monaco: Monaco) => {
-    console.log(monaco);
     editorRef.current = editor;
     editor.onDidChangeCursorPosition(onCursorChange);
     collaborativeEdit("monaco", editor);
