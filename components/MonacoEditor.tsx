@@ -7,6 +7,7 @@ export default function CodeEditor() {
   const editorRef = useRef<any>(null);
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
+    console.log(monaco);
     editorRef.current = editor;
     console.log("Editor mounted:", editor);
     console.log("Monaco instance:", monaco);
