@@ -1,82 +1,78 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Canvas, Text } from "fabric";
+import * as fabric from "fabric";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCollaboration } from "@/hooks/use-collaboration";
 import { useToast } from "@/hooks/use-toast";
 
 export function CollaborativeWhiteboard() {
-  const canvasRef = useRef<Canvas | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
   const [tool, setTool] = useState<"pen" | "eraser">("pen");
   const [codeSnippet, setCodeSnippet] = useState("");
   const { collaborativeEdit } = useCollaboration();
   const { toast } = useToast();
 
   useEffect(() => {
-    const canvas = new Canvas("whiteboard", {
-      isDrawingMode: true,
-      backgroundColor: "#ffffff",
-    });
+    if (canvasRef.current) {
+      const canvas = new fabric.Canvas(canvasRef.current, {
+        isDrawingMode: true,
+        width: 600,
+        height: 400,
+      });
+      setFabricCanvas(canvas);
 
-    if (canvas.freeDrawingBrush) {
-      canvas.freeDrawingBrush.color = "#000000";
-      canvas.freeDrawingBrush.width = 5;
+      const handleCollaborativeChanges = (objects: string) => {
+        canvas.loadFromJSON(objects, () => canvas.renderAll());
+      };
+
+      collaborativeEdit("whiteboard", handleCollaborativeChanges);
+
+      return () => {
+        collaborativeEdit("whiteboard", null);
+        canvas.dispose();
+      };
     }
-    canvasRef.current = canvas;
-
-    const handleCollaborativeChanges = (objects: any) => {
-      canvas.clear();
-      canvas.loadFromJSON(objects, () => canvas.renderAll());
-    };
-
-    collaborativeEdit("whiteboard", handleCollaborativeChanges);
-
-    return () => {
-      collaborativeEdit("whiteboard", null);
-      canvas.dispose();
-    };
   }, [collaborativeEdit]);
 
-  const handleToolChange = (selectedTool: "pen" | "eraser") => {
-    if (!canvasRef.current) return;
-    const canvas = canvasRef.current;
-    setTool(selectedTool);
-
-    if (selectedTool === "pen") {
-      canvas.isDrawingMode = true;
-      if (canvas.freeDrawingBrush) {
-        canvas.freeDrawingBrush.color = "#000000";
-      }
-    } else if (selectedTool === "eraser") {
-      canvas.isDrawingMode = true;
-      if (canvas.freeDrawingBrush) {
-        canvas.freeDrawingBrush.color = "#ffffff";
-      }
+  useEffect(() => {
+    if (fabricCanvas?.freeDrawingBrush) {
+      fabricCanvas.freeDrawingBrush.color =
+        tool === "pen" ? "#000000" : "#ffffff";
+      fabricCanvas.freeDrawingBrush.width = 5;
     }
+  }, [tool, fabricCanvas]);
+
+  const handleToolChange = (selectedTool: "pen" | "eraser") => {
+    setTool(selectedTool);
   };
 
   const handleAddCode = () => {
-    if (!canvasRef.current || !codeSnippet) return;
+    if (fabricCanvas && codeSnippet) {
+      const text = new fabric.Text(codeSnippet, {
+        left: 50,
+        top: 50,
+        fontSize: 16,
+        fill: "#000000",
+      });
+      fabricCanvas.add(text);
+      setCodeSnippet("");
+      updateCollaborativeState();
 
-    const canvas = canvasRef.current;
-    const text = new Text(codeSnippet, {
-      left: 50,
-      top: 50,
-      fontSize: 16,
-      fill: "#000000",
-      selectable: true,
-    });
+      toast({
+        title: "Code snippet added",
+        description: "The code snippet has been added to the whiteboard.",
+      });
+    }
+  };
 
-    canvas.add(text);
-    setCodeSnippet("");
-    collaborativeEdit("whiteboard", canvas.toJSON());
-
-    toast({
-      title: "Code snippet added",
-      description: "The code snippet has been added to the whiteboard.",
-    });
+  const updateCollaborativeState = () => {
+    if (fabricCanvas) {
+      const json = JSON.stringify(fabricCanvas.toJSON());
+      collaborativeEdit("whiteboard", json);
+    }
   };
 
   return (
@@ -104,7 +100,7 @@ export function CollaborativeWhiteboard() {
         />
         <Button onClick={handleAddCode}>Add Code</Button>
       </div>
-      <canvas id="whiteboard" width={600} height={400} className="border" />
+      <canvas ref={canvasRef} className="border" />
     </div>
   );
 }

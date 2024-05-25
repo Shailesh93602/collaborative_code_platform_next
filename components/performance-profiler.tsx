@@ -21,7 +21,16 @@ interface PerformanceData {
   executionTime: number;
 }
 
-export function PerformanceProfiler({ code }: { code: string }) {
+// Extend the Performance interface to include the non-standard memory property
+interface ExtendedPerformance extends Performance {
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
+}
+
+export function PerformanceProfiler({ code }: { readonly code: string }) {
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
   const [optimizationSuggestions, setOptimizationSuggestions] = useState("");
   const [isProfileRunning, setIsProfileRunning] = useState(false);
@@ -30,12 +39,17 @@ export function PerformanceProfiler({ code }: { code: string }) {
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isProfileRunning) {
+      const startTime = performance.now();
       interval = setInterval(() => {
+        const endTime = performance.now();
+        const extendedPerformance = performance as ExtendedPerformance;
         const newDataPoint: PerformanceData = {
           timestamp: Date.now(),
-          cpuUsage: Math.random() * 100,
-          memoryUsage: Math.random() * 1024,
-          executionTime: Math.random() * 1000,
+          cpuUsage: Math.random() * 100, // Simulated CPU usage
+          memoryUsage: extendedPerformance.memory
+            ? extendedPerformance.memory.usedJSHeapSize / (1024 * 1024)
+            : 0,
+          executionTime: endTime - startTime,
         };
         setPerformanceData((prevData) => [...prevData, newDataPoint]);
       }, 1000);

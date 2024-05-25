@@ -18,13 +18,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+const INITIAL_CODE = {
+  javascript: "// Your JavaScript code here\nconsole.log('Hello, World!');",
+  typescript:
+    "// Your TypeScript code here\nlet message: string = 'Hello, World!';\nconsole.log(message);",
+  python: "# Your Python code here\nprint('Hello, World!')",
+  java: '// Your Java code here\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+  cpp: '// Your C++ code here\n#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
+  go: '// Your Go code here\npackage main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}',
+};
+
 export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false);
-  const [code, setCode] = useState<string>("// Your code here");
+  const [code, setCode] = useState<string>(INITIAL_CODE.javascript);
+  const [language, setLanguage] = useState<string>("javascript");
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setCode(INITIAL_CODE[language] || INITIAL_CODE.javascript);
+  }, [language]);
 
   if (!mounted) return null;
 
@@ -34,7 +49,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">Collaborative Code Platform</h1>
           <div className="flex items-center space-x-4">
-            <LanguageSelector />
+            <LanguageSelector value={language} onChange={setLanguage} />
             <BlockchainVersionControl
               code={code}
               onCodeUpdate={(newCode) => setCode(newCode)}
@@ -48,6 +63,7 @@ export default function Home() {
           <CodeEditor
             value={code}
             onChange={(newCode) => setCode(newCode)}
+            language={language}
             className="h-2/3 border-b"
           />
           <Tabs defaultValue="execution" className="flex-grow">

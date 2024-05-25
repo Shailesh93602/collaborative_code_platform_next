@@ -6,13 +6,23 @@ import { useCollaboration } from "@/hooks/use-collaboration";
 import { useAI } from "@/hooks/use-ai";
 import { EditorInstance, AICodeSuggestion } from "@/types/global";
 
+const LANGUAGE_MAPPING = {
+  javascript: "javascript",
+  typescript: "typescript",
+  python: "python",
+  java: "java",
+  cpp: "cpp",
+};
+
 export function CodeEditor({
   value,
   onChange,
+  language,
   className,
 }: {
   value: string;
   onChange: (code: string) => void;
+  language: string;
   className?: string;
 }) {
   const [code, setCode] = useState<string>(value);
@@ -53,7 +63,7 @@ export function CodeEditor({
     <div className={`border rounded-lg overflow-hidden ${className}`}>
       <Editor
         height="100%"
-        defaultLanguage="javascript"
+        language={LANGUAGE_MAPPING[language] || "plaintext"}
         value={code}
         onChange={handleEditorChange}
         onMount={handleEditorDidMount}

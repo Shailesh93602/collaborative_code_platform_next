@@ -18,10 +18,6 @@ export function useDistributedExecution() {
       const result = await response.json();
       return result.output;
     } catch (error) {
-      console.log(
-        "🚀 ~ file: use-distributed-execution.ts:21 ~ executeCode ~ error:",
-        error
-      );
       console.error("Error executing code:", error);
       return "Error: Failed to execute code.";
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -16,6 +16,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 
 const schema = yup.object().shape({
@@ -27,10 +28,11 @@ type FormData = yup.InferType<typeof schema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
@@ -49,10 +51,11 @@ export default function LoginPage() {
         router.push("/");
       } else {
         const errorData = await response.json();
-        console.error("Login failed:", errorData.error);
+        setError(errorData.error);
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error(error);
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -66,6 +69,11 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <Label htmlFor="email">Email</Label>
@@ -85,8 +93,8 @@ export default function LoginPage() {
                 </p>
               )}
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>

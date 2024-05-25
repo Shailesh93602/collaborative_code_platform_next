@@ -12,15 +12,28 @@ export class AIService {
 
   static async getAIResponse(query: string): Promise<string> {
     const client = await this.getClient();
-    const result = await client.predict("/generation_code", { query });
-    return result.data[0];
+    const result: any = await client.predict("/generation_code", { query });
+    return result.data?.[0];
   }
 
   static async getAISuggestions(code: string): Promise<any> {
     const client = await this.getClient();
-    const result = await client.predict("/generation_code", {
+    const result: any = await client.predict("/generation_code", {
       query: code + " Provide me suggestions for this code",
     });
-    return JSON.parse(result.data[0]);
+    return JSON.parse(result.data?.[0]);
+  }
+
+  static async getCodeExplanation(
+    code: string,
+    type: "explanation" | "documentation"
+  ): Promise<string> {
+    const client = await this.getClient();
+    const query =
+      type === "explanation"
+        ? `Explain this code concisely:\n\n${code}`
+        : `Generate documentation for this code:\n\n${code}`;
+    const result: any = await client.predict("/generation_code", { query });
+    return result.data?.[0];
   }
 }

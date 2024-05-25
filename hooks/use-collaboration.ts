@@ -3,7 +3,7 @@ import * as Y from "yjs";
 import { useCollaborationContext } from "@/components/collaboration-provider";
 import { EditorInstance } from "@/types/global";
 
-type CollaborativeData = EditorInstance | Y.Array<any> | null;
+type CollaborativeData = EditorInstance | Y.Array<any> | string | null;
 type CollaborativeCallback = ((data: any) => void) | null;
 
 export function useCollaboration() {
@@ -22,6 +22,9 @@ export function useCollaboration() {
               const newData = yArray.toArray();
               (data as CollaborativeCallback)?.(newData);
             });
+          } else if (typeof data === "string") {
+            yArray.delete(0, yArray.length);
+            yArray.insert(0, [data]);
           } else if (Array.isArray(data)) {
             yArray.delete(0, yArray.length);
             yArray.insert(0, data);

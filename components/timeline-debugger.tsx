@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function TimelineDebugger() {
   const [timeline, setTimeline] = useState<
@@ -20,7 +22,6 @@ export function TimelineDebugger() {
   const [variables, setVariables] = useState({});
 
   useEffect(() => {
-    // Simulating timeline data
     const simulatedTimeline = Array.from({ length: 20 }, (_, i) => ({
       step: i,
       code: `// Step ${i}\nconsole.log('Executing step ${i}');`,
@@ -38,44 +39,53 @@ export function TimelineDebugger() {
   };
 
   return (
-    <div className="border rounded-lg p-4">
-      <h2 className="text-2xl font-semibold mb-4">Time-Travel Debugger</h2>
-      <div className="flex space-x-4 mb-4">
-        <Button
-          onClick={() => handleStepChange([Math.max(0, currentStep - 1)])}
-        >
-          Previous
-        </Button>
-        <Slider
-          value={[currentStep]}
-          onValueChange={handleStepChange}
-          max={timeline.length - 1}
-          step={1}
-        />
-        <Button
-          onClick={() =>
-            handleStepChange([Math.min(timeline.length - 1, currentStep + 1)])
-          }
-        >
-          Next
-        </Button>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <h3 className="text-lg font-semibold mb-2">
-            Code at Step {currentStep}
-          </h3>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">
+          Time-Travel Debugger
+        </CardTitle>
+        <div className="flex items-center space-x-2">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => handleStepChange([Math.max(0, currentStep - 1)])}
+            disabled={currentStep === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Slider
+            value={[currentStep]}
+            onValueChange={handleStepChange}
+            max={timeline.length - 1}
+            step={1}
+            className="w-[100px]"
+          />
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() =>
+              handleStepChange([Math.min(timeline.length - 1, currentStep + 1)])
+            }
+            disabled={currentStep === timeline.length - 1}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="grid grid-cols-2 gap-4 p-4 flex-grow">
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">Code at Step {currentStep}</h3>
           <ScrollArea className="h-[200px] border rounded p-2">
-            <pre>{timeline[currentStep]?.code}</pre>
+            <pre className="text-sm">{timeline[currentStep]?.code}</pre>
           </ScrollArea>
         </div>
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Variables</h3>
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">Variables</h3>
           <ScrollArea className="h-[200px] border rounded p-2">
-            <pre>{JSON.stringify(variables, null, 2)}</pre>
+            <pre className="text-sm">{JSON.stringify(variables, null, 2)}</pre>
           </ScrollArea>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
