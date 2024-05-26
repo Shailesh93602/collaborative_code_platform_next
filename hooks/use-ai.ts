@@ -13,8 +13,6 @@ export function useAI() {
           body: JSON.stringify({ code }),
         });
 
-        console.log("🚀 ~ file: use-ai.ts:17 ~ response:", response);
-
         if (!response.ok) {
           throw new Error("Failed to get AI suggestions");
         }

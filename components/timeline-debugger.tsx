@@ -6,32 +6,51 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useWeb3 } from "@/hooks/use-web3";
+
+interface DebugStep {
+  step: number;
+  code: string;
+  variables: Record<string, any>;
+  timestamp: number;
+}
 
 export function TimelineDebugger() {
-  const [timeline, setTimeline] = useState<
-    {
-      step: number;
-      code: string;
-      variables: {
-        x: number;
-        y: number;
-      };
-    }[]
-  >([]);
+  const [timeline, setTimeline] = useState<DebugStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [variables, setVariables] = useState({});
+  const [variables, setVariables] = useState<Record<string, any>>({});
+  const { getAllVersions, loadVersion } = useWeb3();
 
   useEffect(() => {
-    const simulatedTimeline = Array.from({ length: 20 }, (_, i) => ({
-      step: i,
-      code: `// Step ${i}\nconsole.log('Executing step ${i}');`,
-      variables: {
-        x: Math.floor(Math.random() * 100),
-        y: Math.floor(Math.random() * 100),
-      },
-    }));
-    setTimeline(simulatedTimeline);
+    fetchDebugTimeline();
   }, []);
+
+  const fetchDebugTimeline = async () => {
+    try {
+      const versions = await getAllVersions();
+      const debugSteps = await Promise.all(
+        versions.map(async (version, index) => {
+          const { code, timestamp } = await loadVersion(version.hash);
+          return {
+            step: index,
+            code,
+            variables: generateDummyVariables(), // Replace with actual variable state when available
+            timestamp,
+          };
+        })
+      );
+      setTimeline(debugSteps);
+    } catch (error) {
+      console.error("Error fetching debug timeline:", error);
+    }
+  };
+
+  const generateDummyVariables = () => {
+    return {
+      x: Math.floor(Math.random() * 100),
+      y: Math.floor(Math.random() * 100),
+    };
+  };
 
   const handleStepChange = (value: number[]) => {
     setCurrentStep(value[0]);

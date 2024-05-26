@@ -3,6 +3,8 @@ import * as ivm from "isolated-vm";
 import { loadPyodide } from "pyodide";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 const execAsync = promisify(exec);
 
@@ -65,6 +67,12 @@ const languageConfigs = {
 };
 
 export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { code, language } = await request.json();
 
   if (!languageConfigs[language]) {

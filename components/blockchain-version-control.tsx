@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,12 +19,19 @@ import {
   AlertTriangle,
   Tag,
   MessageSquare,
+  Download,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Pagination } from "@/components/ui/pagination";
 import { DiffViewer } from "@/components/diff-viewer";
 import { BranchManager } from "@/components/branch-manager";
+import { VersionGraph } from "@/components/version-graph";
+import { useLocalCache } from "@/hooks/use-local-cache";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FileTree } from "@/components/file-tree";
+import { saveAs } from "file-saver";
 
 interface Version {
   hash: string;
@@ -37,6 +44,11 @@ interface Comment {
   author: string;
   content: string;
   timestamp: number;
+}
+
+interface File {
+  path: string;
+  content: string;
 }
 
 interface BlockchainVersionControlProps {
@@ -62,6 +74,20 @@ export function BlockchainVersionControl({
   const [newTag, setNewTag] = useState("");
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
+  const [pendingVersions, setPendingVersions] = useState<
+    { commitMessage: string; files: File[] }[]
+  >([]);
+  const [fileTree, setFileTree] = useState<any>({
+    name: "root",
+    type: "directory",
+    children: [
+      {
+        name: "main.js",
+        type: "file",
+      },
+    ],
+  });
+  const [selectedFile, setSelectedFile] = useState<string>("main.js");
   const {
     saveVersion,
     loadVersion,
@@ -72,12 +98,110 @@ export function BlockchainVersionControl({
     getTags,
     addComment,
     getComments,
+    batchSaveVersions,
+    revertToVersion,
+    getBranchNames,
+    currentBranch,
+    createFile,
+    deleteFile,
+    renameFile,
   } = useWeb3();
   const { toast } = useToast();
+  const {
+    data: cachedVersions,
+    loading: versionsLoading,
+    error: versionsError,
+    invalidateCache,
+  } = useLocalCache("versionHistory", getAllVersions);
 
   useEffect(() => {
-    fetchVersions();
-  }, []);
+    if (cachedVersions) {
+      setVersions(cachedVersions);
+    }
+  }, [cachedVersions]);
+
+  const handleBlockchainError = useCallback(
+    (error: Error, action: string) => {
+      console.error(`Error ${action}:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to ${action}. Please try again.`,
+        variant: "destructive",
+      });
+    },
+    [toast]
+  );
+
+  const handleSave = useCallback(async () => {
+    if (!commitMessage) return;
+    setIsLoading(true);
+    try {
+      const files = [{ path: selectedFile, content: code }];
+      const result = await saveVersion(commitMessage, files);
+      setPendingVersions((prev) => [...prev, { commitMessage, files }]);
+      setCommitMessage("");
+      invalidateCache();
+      toast({
+        title: "Success",
+        description: "Version saved successfully",
+      });
+    } catch (error) {
+      handleBlockchainError(error as Error, "saving version");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    commitMessage,
+    code,
+    selectedFile,
+    saveVersion,
+    invalidateCache,
+    toast,
+    handleBlockchainError,
+  ]);
+
+  const handleBatchSave = useCallback(async () => {
+    if (pendingVersions.length === 0) return;
+    setIsLoading(true);
+    try {
+      await batchSaveVersions(pendingVersions);
+      setPendingVersions([]);
+      fetchVersions();
+      toast({
+        title: "Success",
+        description: "Versions saved successfully",
+      });
+    } catch (error) {
+      handleBlockchainError(error as Error, "saving versions");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    pendingVersions,
+    batchSaveVersions,
+    fetchVersions,
+    toast,
+    handleBlockchainError,
+  ]);
+
+  const handleLoad = async (hash: string) => {
+    setIsLoading(true);
+    try {
+      const result = await loadVersion(hash);
+      const mainFile = result.files.find((file) => file.path === "main.js");
+      if (mainFile) {
+        onCodeUpdate(mainFile.content);
+      }
+      toast({
+        title: "Success",
+        description: "Version loaded successfully",
+      });
+    } catch (error) {
+      handleBlockchainError(error as Error, "loading version");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchVersions = async () => {
     setIsLoading(true);
@@ -91,59 +215,7 @@ export function BlockchainVersionControl({
       );
       setVersions(versionsWithTags);
     } catch (error) {
-      console.error("Error fetching versions:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch versions",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      const result = await saveVersion(commitMessage, code);
-      console.log(
-        "🚀 ~ file: blockchain-version-control.tsx:109 ~ handleSave ~ result:",
-        result
-      );
-      setCommitMessage("");
-      fetchVersions();
-      toast({
-        title: "Success",
-        description: "Version saved successfully",
-      });
-    } catch (error) {
-      console.error("Error saving version:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save version",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLoad = async (hash: string) => {
-    setIsLoading(true);
-    try {
-      const result = await loadVersion(hash);
-      onCodeUpdate(result.code);
-      toast({
-        title: "Success",
-        description: "Version loaded successfully",
-      });
-    } catch (error) {
-      console.error("Error loading version:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load version",
-        variant: "destructive",
-      });
+      handleBlockchainError(error as Error, "fetching versions");
     } finally {
       setIsLoading(false);
     }
@@ -171,12 +243,7 @@ export function BlockchainVersionControl({
       setVersions(searchResults);
       setCurrentPage(1);
     } catch (error) {
-      console.error("Error searching versions:", error);
-      toast({
-        title: "Error",
-        description: "Failed to search versions",
-        variant: "destructive",
-      });
+      handleBlockchainError(error as Error, "searching versions");
     } finally {
       setIsLoading(false);
     }
@@ -197,12 +264,7 @@ export function BlockchainVersionControl({
         description: "Conflict resolved successfully",
       });
     } catch (error) {
-      console.error("Error resolving conflict:", error);
-      toast({
-        title: "Error",
-        description: "Failed to resolve conflict",
-        variant: "destructive",
-      });
+      handleBlockchainError(error as Error, "resolving conflict");
     } finally {
       setIsLoading(false);
     }
@@ -220,12 +282,7 @@ export function BlockchainVersionControl({
         description: "Tag added successfully",
       });
     } catch (error) {
-      console.error("Error adding tag:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add tag",
-        variant: "destructive",
-      });
+      handleBlockchainError(error as Error, "adding tag");
     } finally {
       setIsLoading(false);
     }
@@ -244,12 +301,7 @@ export function BlockchainVersionControl({
         description: "Comment added successfully",
       });
     } catch (error) {
-      console.error("Error adding comment:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add comment",
-        variant: "destructive",
-      });
+      handleBlockchainError(error as Error, "adding comment");
     } finally {
       setIsLoading(false);
     }
@@ -261,15 +313,115 @@ export function BlockchainVersionControl({
       const fetchedComments = await getComments(versionHash);
       setComments(fetchedComments);
     } catch (error) {
-      console.error("Error fetching comments:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch comments",
-        variant: "destructive",
-      });
+      handleBlockchainError(error as Error, "fetching comments");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCreateFile = async (path: string) => {
+    try {
+      await createFile(path, "");
+      fetchFileTree();
+      toast({
+        title: "Success",
+        description: "File created successfully",
+      });
+    } catch (error) {
+      handleBlockchainError(error as Error, "creating file");
+    }
+  };
+
+  const handleCreateDirectory = async (path: string) => {
+    try {
+      await createFile(path, "", true);
+      fetchFileTree();
+      toast({
+        title: "Success",
+        description: "Directory created successfully",
+      });
+    } catch (error) {
+      handleBlockchainError(error as Error, "creating directory");
+    }
+  };
+
+  const handleDeleteFile = async (path: string) => {
+    try {
+      await deleteFile(path);
+      fetchFileTree();
+      toast({
+        title: "Success",
+        description: "File deleted successfully",
+      });
+    } catch (error) {
+      handleBlockchainError(error as Error, "deleting file");
+    }
+  };
+
+  const handleRenameFile = async (oldPath: string, newPath: string) => {
+    try {
+      await renameFile(oldPath, newPath);
+      fetchFileTree();
+      toast({
+        title: "Success",
+        description: "File renamed successfully",
+      });
+    } catch (error) {
+      handleBlockchainError(error as Error, "renaming file");
+    }
+  };
+
+  const handleFileSelect = async (path: string) => {
+    setSelectedFile(path);
+    try {
+      const fileContent = await loadVersion(path);
+      onCodeUpdate(fileContent.code);
+    } catch (error) {
+      handleBlockchainError(error as Error, "loading file content");
+    }
+  };
+
+  const fetchFileTree = async () => {
+    try {
+      const tree = await getAllVersions();
+      setFileTree(tree);
+    } catch (error) {
+      handleBlockchainError(error as Error, "fetching file tree");
+    }
+  };
+
+  const handleRevert = async (versionHash: string) => {
+    if (
+      window.confirm(
+        "Are you sure you want to revert to this version? This action cannot be undone."
+      )
+    ) {
+      setIsLoading(true);
+      try {
+        await revertToVersion(versionHash);
+        toast({
+          title: "Success",
+          description: "Reverted to selected version successfully",
+        });
+        fetchVersions();
+      } catch (error) {
+        handleBlockchainError(error as Error, "reverting to version");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleExport = () => {
+    const exportData = {
+      versions,
+      currentBranch,
+      branches: getBranchNames(),
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: "application/json",
+    });
+    saveAs(blob, "version-history-export.json");
   };
 
   const paginatedVersions = versions.slice(
@@ -290,6 +442,15 @@ export function BlockchainVersionControl({
           <DialogTitle>Blockchain Version Control</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          {versionsError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                Failed to fetch version history. Please try again later.
+              </AlertDescription>
+            </Alert>
+          )}
           <div className="flex space-x-2">
             <Input
               placeholder="Commit message"
@@ -299,75 +460,100 @@ export function BlockchainVersionControl({
             />
             <Button onClick={handleSave} disabled={!commitMessage || isLoading}>
               <Save className="h-4 w-4 mr-2" />
-              Save
+              Queue Save
             </Button>
           </div>
-          <div className="flex space-x-2">
-            <Input
-              placeholder="Search versions"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              disabled={isLoading}
-            />
-            <Button onClick={handleSearch} disabled={!searchQuery || isLoading}>
-              <Search className="h-4 w-4 mr-2" />
-              Search
-            </Button>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium mb-2">Version History</h3>
-            <ScrollArea className="h-[200px] border rounded">
-              {isLoading ? (
-                <div className="flex items-center justify-center h-full">
-                  Loading...
-                </div>
-              ) : (
-                paginatedVersions.map((version) => (
-                  <div
-                    key={version.hash}
-                    className="flex justify-between items-center p-2 hover:bg-accent"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedVersions.includes(version.hash)}
-                      onChange={() => handleVersionSelect(version.hash)}
-                      className="mr-2"
-                    />
-                    <span className="text-sm truncate flex-grow">
-                      {version.message}
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      {version.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleLoad(version.hash)}
-                        disabled={isLoading}
-                      >
-                        <Upload className="h-4 w-4" />
-                        <span className="sr-only">Load version</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleViewComments(version.hash)}
-                        disabled={isLoading}
-                      >
-                        <MessageSquare className="h-4 w-4" />
-                        <span className="sr-only">View comments</span>
-                      </Button>
-                    </div>
+          {pendingVersions.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium mb-2">Pending Versions</h3>
+              <ScrollArea className="h-[100px] border rounded mb-2">
+                {pendingVersions.map((version, index) => (
+                  <div key={index} className="p-2 border-b">
+                    <p className="text-sm">{version.commitMessage}</p>
                   </div>
-                ))
-              )}
-            </ScrollArea>
+                ))}
+              </ScrollArea>
+              <Button onClick={handleBatchSave} disabled={isLoading}>
+                <Save className="h-4 w-4 mr-2" />
+                Save All Versions
+              </Button>
+            </div>
+          )}
+          <div className="flex space-x-4">
+            <div className="w-1/3">
+              <h3 className="text-sm font-medium mb-2">File Explorer</h3>
+              <FileTree
+                data={fileTree}
+                onSelect={handleFileSelect}
+                onCreateFile={handleCreateFile}
+                onCreateDirectory={handleCreateDirectory}
+                onDelete={handleDeleteFile}
+                onRename={handleRenameFile}
+              />
+            </div>
+            <div className="w-2/3">
+              <h3 className="text-sm font-medium mb-2">Version History</h3>
+              <ScrollArea className="h-[200px] border rounded">
+                {versionsLoading ? (
+                  <div className="flex items-center justify-center h-full">
+                    Loading versions...
+                  </div>
+                ) : (
+                  paginatedVersions.map((version) => (
+                    <div
+                      key={version.hash}
+                      className="flex justify-between items-center p-2 hover:bg-accent"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedVersions.includes(version.hash)}
+                        onChange={() => handleVersionSelect(version.hash)}
+                        className="mr-2"
+                      />
+                      <span className="text-sm truncate flex-grow">
+                        {version.message}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        {version.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleLoad(version.hash)}
+                          disabled={isLoading}
+                        >
+                          <Upload className="h-4 w-4" />
+                          <span className="sr-only">Load version</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewComments(version.hash)}
+                          disabled={isLoading}
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                          <span className="sr-only">View comments</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRevert(version.hash)}
+                          disabled={isLoading}
+                        >
+                          Revert
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </ScrollArea>
+            </div>
           </div>
           <Pagination
             currentPage={currentPage}
@@ -449,6 +635,14 @@ export function BlockchainVersionControl({
             </div>
           </div>
           <BranchManager />
+          <div>
+            <h3 className="text-sm font-medium mb-2">Version History Graph</h3>
+            <VersionGraph versions={versions} />
+          </div>
+          <Button onClick={handleExport} disabled={isLoading}>
+            <Download className="h-4 w-4 mr-2" />
+            Export History
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

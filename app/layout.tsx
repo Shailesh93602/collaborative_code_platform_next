@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CollaborationProvider } from "@/components/collaboration-provider";
 import { Web3Provider } from "@/components/web3-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,19 +23,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Web3Provider>
-            <CollaborationProvider>
-              {children}
-              <Toaster />
-            </CollaborationProvider>
-          </Web3Provider>
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Web3Provider>
+              <CollaborationProvider>
+                {children}
+                <Toaster />
+              </CollaborationProvider>
+            </Web3Provider>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
