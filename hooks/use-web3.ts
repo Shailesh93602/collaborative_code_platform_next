@@ -1,11 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
-import {
-  BrowserProvider,
-  Contract,
-  keccak256,
-  toUtf8Bytes,
-  ethers,
-} from "ethers";
+import { BrowserProvider, Contract, keccak256, toUtf8Bytes } from "ethers";
+import { CustomFile } from "@/types/file";
 
 const CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"; // Replace with actual deployed contract address
 const CONTRACT_ABI = [
@@ -21,14 +16,25 @@ const CONTRACT_ABI = [
   "function getTags(bytes32 versionHash) public view returns (string[] memory)",
   "function addComment(bytes32 versionHash, string memory content) public",
   "function getComments(bytes32 versionHash) public view returns (tuple(address author, string content, uint256 timestamp)[] memory)",
-  "function batchSaveVersions(string[] memory commitMessages, bytes32[] memory codeHashes) public returns (bytes32[] memory)",
+  "function batchSaveVersions(string[] memory commitMessages, string[] memory codes) public returns (bytes32[] memory)",
   "function resolveConflict(string memory conflictId, bytes32 resolvedCodeHash) public",
   "function revertToVersion(bytes32 versionHash) public",
   "function searchVersions(string memory query) public view returns (bytes32[] memory)",
   "function createFile(string memory path, bytes32 contentHash, bool isDirectory) public",
   "function deleteFile(string memory path) public",
   "function renameFile(string memory oldPath, string memory newPath) public",
+  "function addReviewComment(bytes32 versionHash, string memory content, uint256 lineNumber) public",
+  "function getReviewComments(bytes32 versionHash) public view returns (tuple(uint256 id, address author, string content, uint256 lineNumber, uint256 timestamp)[] memory)",
+  "function approveVersion(bytes32 versionHash) public",
+  "function rejectVersion(bytes32 versionHash) public",
+  "function getApprovalStatus(bytes32 versionHash) public view returns (bool, address, uint256)",
 ];
+
+interface Version {
+  hash: string;
+  message: string;
+  timestamp: number;
+}
 
 export function useWeb3() {
   const [contract, setContract] = useState<Contract | null>(null);
@@ -39,10 +45,19 @@ export function useWeb3() {
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-      const newContract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-      setContract(newContract);
-      const branch = await newContract.getCurrentBranch();
-      setCurrentBranch(branch.toNumber());
+      try {
+        const newContract = new Contract(
+          CONTRACT_ADDRESS,
+          CONTRACT_ABI,
+          signer
+        );
+        setContract(newContract);
+        const branch = await newContract.getCurrentBranch();
+        setCurrentBranch(branch.toNumber());
+      } catch (error) {
+        console.error("Error initializing contract:", error);
+        // TODO: Add user-facing error message
+      }
     } else {
       throw new Error("Ethereum provider not found");
     }
@@ -53,10 +68,12 @@ export function useWeb3() {
   }, [initializeContract]);
 
   const saveVersion = useCallback(
-    async (commitMessage: string, code: string) => {
+    async (commitMessage: string, files: CustomFile[]) => {
       if (!contract) throw new Error("Contract not initialized");
       try {
-        const tx = await contract.saveVersion(commitMessage, code);
+        const mainFile = files.find((file) => file.path === "main.js");
+        if (!mainFile) throw new Error("Main file not found");
+        const tx = await contract.saveVersion(commitMessage, mainFile.content);
         const receipt = await tx.wait();
         const versionHash = receipt.events[0].args[0];
         return {
@@ -79,7 +96,7 @@ export function useWeb3() {
       commitMessage: string;
       code: string;
       timestamp: number;
-      files: File[];
+      files: CustomFile[];
     }> => {
       if (!contract) throw new Error("Contract not initialized");
       try {
@@ -205,10 +222,14 @@ export function useWeb3() {
   );
 
   const addComment = useCallback(
-    async (versionHash: string, content: string) => {
+    async (versionHash: string, content: string, lineNumber: number) => {
       if (!contract) throw new Error("Contract not initialized");
       try {
-        const tx = await contract.addComment(versionHash, content);
+        const tx = await contract.addReviewComment(
+          versionHash,
+          content,
+          lineNumber
+        );
         await tx.wait();
       } catch (error) {
         console.error("Error adding comment:", error);
@@ -222,10 +243,12 @@ export function useWeb3() {
     async (versionHash: string) => {
       if (!contract) throw new Error("Contract not initialized");
       try {
-        const comments = await contract.getComments(versionHash);
+        const comments = await contract.getReviewComments(versionHash);
         return comments.map((comment: any) => ({
+          id: comment.id.toString(),
           author: comment.author,
           content: comment.content,
+          lineNumber: comment.lineNumber.toNumber(),
           timestamp: comment.timestamp.toNumber(),
         }));
       } catch (error) {
@@ -237,14 +260,16 @@ export function useWeb3() {
   );
 
   const batchSaveVersions = useCallback(
-    async (versions: { commitMessage: string; files: File[] }[]) => {
+    async (versions: { commitMessage: string; files: CustomFile[] }[]) => {
       if (!contract) throw new Error("Contract not initialized");
       try {
         const commitMessages = versions.map((v) => v.commitMessage);
-        const codeHashes = versions.map((v) =>
-          keccak256(toUtf8Bytes(v.files[0].content))
-        );
-        const tx = await contract.batchSaveVersions(commitMessages, codeHashes);
+        const codes = versions.map((v) => {
+          const mainFile = v.files.find((file) => file.path === "main.js");
+          if (!mainFile) throw new Error("Main file not found");
+          return mainFile.content;
+        });
+        const tx = await contract.batchSaveVersions(commitMessages, codes);
         const receipt = await tx.wait();
         const versionHashes = receipt.events[0].args[0];
         return versionHashes.map((hash: string, index: number) => ({
@@ -292,7 +317,7 @@ export function useWeb3() {
       try {
         const tx = await contract.resolveConflict(
           conflictId,
-          ethers.id(resolvedCode)
+          keccak256(toUtf8Bytes(resolvedCode))
         );
         await tx.wait();
       } catch (error) {
@@ -323,7 +348,7 @@ export function useWeb3() {
       try {
         const tx = await contract.createFile(
           path,
-          ethers.id(content),
+          keccak256(toUtf8Bytes(content)),
           isDirectory
         );
         await tx.wait();
@@ -363,6 +388,49 @@ export function useWeb3() {
     [contract]
   );
 
+  const approveVersion = useCallback(
+    async (versionHash: string) => {
+      if (!contract) throw new Error("Contract not initialized");
+      try {
+        const tx = await contract.approveVersion(versionHash);
+        await tx.wait();
+      } catch (error) {
+        console.error("Error approving version:", error);
+        throw error;
+      }
+    },
+    [contract]
+  );
+
+  const rejectVersion = useCallback(
+    async (versionHash: string) => {
+      if (!contract) throw new Error("Contract not initialized");
+      try {
+        const tx = await contract.rejectVersion(versionHash);
+        await tx.wait();
+      } catch (error) {
+        console.error("Error rejecting version:", error);
+        throw error;
+      }
+    },
+    [contract]
+  );
+
+  const getApprovalStatus = useCallback(
+    async (versionHash: string) => {
+      if (!contract) throw new Error("Contract not initialized");
+      try {
+        const [approved, reviewer, timestamp] =
+          await contract.getApprovalStatus(versionHash);
+        return approved ? "approved" : "rejected";
+      } catch (error) {
+        console.error("Error getting approval status:", error);
+        throw error;
+      }
+    },
+    [contract]
+  );
+
   return {
     saveVersion,
     loadVersion,
@@ -383,5 +451,8 @@ export function useWeb3() {
     createFile,
     deleteFile,
     renameFile,
+    approveVersion,
+    rejectVersion,
+    getApprovalStatus,
   };
 }

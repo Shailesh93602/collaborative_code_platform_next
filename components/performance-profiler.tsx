@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -9,10 +9,24 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
 } from "recharts";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAI } from "@/hooks/use-ai";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Play, StopCircle } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PerformanceData {
   timestamp: number;
@@ -21,35 +35,25 @@ interface PerformanceData {
   executionTime: number;
 }
 
-// Extend the Performance interface to include the non-standard memory property
-interface ExtendedPerformance extends Performance {
-  memory?: {
-    usedJSHeapSize: number;
-    totalJSHeapSize: number;
-    jsHeapSizeLimit: number;
-  };
-}
-
-export function PerformanceProfiler({ code }: { readonly code: string }) {
+export function PerformanceProfiler({ code }: { code: string }) {
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
   const [optimizationSuggestions, setOptimizationSuggestions] = useState("");
   const [isProfileRunning, setIsProfileRunning] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<
+    "cpuUsage" | "memoryUsage" | "executionTime"
+  >("cpuUsage");
+  const [chartType, setChartType] = useState<"line" | "area" | "bar">("line");
   const { getAIResponse } = useAI();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isProfileRunning) {
-      const startTime = performance.now();
       interval = setInterval(() => {
-        const endTime = performance.now();
-        const extendedPerformance = performance as ExtendedPerformance;
         const newDataPoint: PerformanceData = {
           timestamp: Date.now(),
-          cpuUsage: Math.random() * 100, // Simulated CPU usage
-          memoryUsage: extendedPerformance.memory
-            ? extendedPerformance.memory.usedJSHeapSize / (1024 * 1024)
-            : 0,
-          executionTime: endTime - startTime,
+          cpuUsage: Math.random() * 100,
+          memoryUsage: Math.random() * 1024,
+          executionTime: Math.random() * 1000,
         };
         setPerformanceData((prevData) => [...prevData, newDataPoint]);
       }, 1000);
@@ -68,67 +72,124 @@ export function PerformanceProfiler({ code }: { readonly code: string }) {
   };
 
   const generateOptimizationSuggestions = async () => {
-    const prompt = `Based on the following performance data, suggest optimizations for this code:\n\n${JSON.stringify(
-      performanceData
-    )}\n\nCode:\n${code}`;
+    const prompt = `Based on the following performance data, suggest optimizations for this code:
+
+${JSON.stringify(performanceData)}
+
+Code:
+${code}`;
     const suggestions = await getAIResponse(prompt);
     setOptimizationSuggestions(suggestions);
   };
 
+  const chartData = useMemo(() => {
+    return performanceData.map((data) => ({
+      ...data,
+      timestamp: new Date(data.timestamp).toLocaleTimeString(),
+    }));
+  }, [performanceData]);
+
+  const renderChart = () => {
+    const ChartComponent =
+      chartType === "line"
+        ? LineChart
+        : chartType === "area"
+        ? AreaChart
+        : BarChart;
+    const DataComponent =
+      chartType === "line" ? Line : chartType === "area" ? Area : Bar;
+
+    return (
+      <ResponsiveContainer width="100%" height={300}>
+        <ChartComponent data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="timestamp" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <DataComponent
+            type="monotone"
+            dataKey={selectedMetric}
+            stroke="#8884d8"
+            fill="#8884d8"
+            name={
+              selectedMetric === "cpuUsage"
+                ? "CPU Usage (%)"
+                : selectedMetric === "memoryUsage"
+                ? "Memory Usage (MB)"
+                : "Execution Time (ms)"
+            }
+          />
+        </ChartComponent>
+      </ResponsiveContainer>
+    );
+  };
+
   return (
-    <div className="border rounded-lg p-4 space-y-4">
-      <h2 className="text-2xl font-semibold">Performance Profiler</h2>
-      <div className="flex space-x-2">
-        <Button onClick={startProfiling} disabled={isProfileRunning}>
-          Start Profiling
-        </Button>
-        <Button onClick={stopProfiling} disabled={!isProfileRunning}>
-          Stop Profiling
-        </Button>
-      </div>
-      <LineChart width={600} height={300} data={performanceData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="timestamp"
-          type="number"
-          domain={["dataMin", "dataMax"]}
-          tickFormatter={(unixTime) => new Date(unixTime).toLocaleTimeString()}
-        />
-        <YAxis yAxisId="left" />
-        <YAxis yAxisId="right" orientation="right" />
-        <Tooltip
-          labelFormatter={(label) => new Date(label).toLocaleTimeString()}
-        />
-        <Legend />
-        <Line
-          yAxisId="left"
-          type="monotone"
-          dataKey="cpuUsage"
-          stroke="#8884d8"
-          name="CPU Usage (%)"
-        />
-        <Line
-          yAxisId="right"
-          type="monotone"
-          dataKey="memoryUsage"
-          stroke="#82ca9d"
-          name="Memory Usage (MB)"
-        />
-        <Line
-          yAxisId="right"
-          type="monotone"
-          dataKey="executionTime"
-          stroke="#ffc658"
-          name="Execution Time (ms)"
-        />
-      </LineChart>
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold">Optimization Suggestions</h3>
-        <ScrollArea className="h-[200px] border rounded p-2">
-          {optimizationSuggestions ||
-            "Run the profiler to generate optimization suggestions."}
-        </ScrollArea>
-      </div>
-    </div>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">
+          Performance Profiler
+        </CardTitle>
+        <div className="flex items-center space-x-2">
+          <Select
+            value={selectedMetric}
+            onValueChange={(
+              value: "cpuUsage" | "memoryUsage" | "executionTime"
+            ) => setSelectedMetric(value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select metric" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="cpuUsage">CPU Usage</SelectItem>
+              <SelectItem value="memoryUsage">Memory Usage</SelectItem>
+              <SelectItem value="executionTime">Execution Time</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={chartType}
+            onValueChange={(value: "line" | "area" | "bar") =>
+              setChartType(value)
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select chart type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="line">Line Chart</SelectItem>
+              <SelectItem value="area">Area Chart</SelectItem>
+              <SelectItem value="bar">Bar Chart</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={isProfileRunning ? stopProfiling : startProfiling}
+            size="sm"
+          >
+            {isProfileRunning ? (
+              <>
+                <StopCircle className="mr-2 h-4 w-4" /> Stop Profiling
+              </>
+            ) : (
+              <>
+                <Play className="mr-2 h-4 w-4" /> Start Profiling
+              </>
+            )}
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="flex-grow grid grid-rows-2 gap-4 p-4">
+        <div className="w-full h-full">{renderChart()}</div>
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">Optimization Suggestions</h3>
+          <ScrollArea className="h-full border rounded p-2">
+            <p className="text-sm">
+              {optimizationSuggestions ||
+                "Run the profiler to generate optimization suggestions."}
+            </p>
+          </ScrollArea>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

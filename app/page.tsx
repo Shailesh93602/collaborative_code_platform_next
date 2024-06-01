@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useQuery } from "react-query";
 import { CodeEditor } from "@/components/code-editor";
 import { ExecutionPanel } from "@/components/execution-panel";
 import { VisualizationStudio } from "@/components/visualization-studio";
@@ -21,32 +22,81 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { signIn, signOut } from "next-auth/react";
 import { CollaborationProvider } from "@/components/collaboration-provider";
+import { useProjectContext } from "@/contexts/project-context";
+import { fetchProjectData } from "@/lib/api";
+import { UserOnboarding } from "@/components/user-onboarding";
+import { PluginManager } from "@/components/plugin-manager";
+import { CustomFile } from "@/types/file";
+import { createFile } from "@/lib/api";
 
 const INITIAL_CODE = {
-  javascript: "// Your JavaScript code here\nconsole.log('Hello, World!');",
-  typescript:
-    "// Your TypeScript code here\nlet message: string = 'Hello, World!';\nconsole.log(message);",
-  python: "# Your Python code here\nprint('Hello, World!')",
-  java: '// Your Java code here\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
-  cpp: '// Your C++ code here\n#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}',
-  go: '// Your Go code here\npackage main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}',
+  javascript: `// Your JavaScript code here
+console.log('Hello, World!');`,
+  typescript: `// Your TypeScript code here
+let message: string = 'Hello, World!';
+console.log(message);`,
+  python: `# Your Python code here
+print('Hello, World!')`,
+  java: `// Your Java code here
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}`,
+  cpp: `// Your C++ code here
+#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}`,
+  go: `// Your Go code here
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}`,
 };
 
 export default function Home() {
-  const [mounted, setMounted] = useState<boolean>(false);
-  const [code, setCode] = useState<string>(INITIAL_CODE.javascript);
-  const [language, setLanguage] = useState<string>("javascript");
   const { data: session, status } = useSession();
+  const { projectId, setProjectId } = useProjectContext();
+  const [language, setLanguage] = useState<string>("javascript");
+  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [files, setFiles] = useState<CustomFile[]>([
+    { path: "main.js", content: INITIAL_CODE.javascript },
+  ]);
+
+  const {
+    data: projectData,
+    isLoading,
+    error,
+  } = useQuery(["projectData", projectId], () => fetchProjectData(projectId), {
+    enabled: !!projectId,
+  });
+
+  const [code, setCode] = useState<string>(INITIAL_CODE[language]);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (projectData) {
+      setCode(projectData.code);
+      setLanguage(projectData.language);
+    }
+  }, [projectData]);
 
-  useEffect(() => {
-    setCode(INITIAL_CODE[language] || INITIAL_CODE.javascript);
-  }, [language]);
+  const handleCreateFile = async (path: string, content: string) => {
+    try {
+      await createFile(path, content, false);
+      setFiles([...files, { path, content }]);
+    } catch (error) {
+      console.error("Error creating file:", error);
+      // TODO: Add user-facing error message
+    }
+  };
 
-  if (!mounted) return null;
+  // Add similar error handling to handleCreateDirectory, handleDeleteFile, and handleRenameFile functions
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -71,6 +121,8 @@ export default function Home() {
               <BlockchainVersionControl
                 code={code}
                 onCodeUpdate={(newCode) => setCode(newCode)}
+                files={files}
+                onFilesUpdate={(newFiles) => setFiles(newFiles)}
               />
               <PeerList />
               <Button onClick={() => signOut()}>Sign out</Button>
@@ -109,9 +161,10 @@ export default function Home() {
                 <TabsTrigger value="visualize">Visualize</TabsTrigger>
                 <TabsTrigger value="explain">Explain</TabsTrigger>
                 <TabsTrigger value="collaborate">Collaborate</TabsTrigger>
+                <TabsTrigger value="plugins">Plugins</TabsTrigger>
               </TabsList>
               <TabsContent value="ai" className="p-4 h-full">
-                <AIAssistant />
+                <AIAssistant code={code} language={language} />
               </TabsContent>
               <TabsContent value="visualize" className="p-4 h-full">
                 <ScrollArea className="h-full">
@@ -130,9 +183,13 @@ export default function Home() {
               <TabsContent value="collaborate" className="p-4 h-full">
                 <CollaborativeWhiteboard />
               </TabsContent>
+              <TabsContent value="plugins" className="p-4 h-full">
+                <PluginManager />
+              </TabsContent>
             </Tabs>
           </div>
         </div>
+        {showOnboarding && <UserOnboarding />}
       </main>
     </CollaborationProvider>
   );

@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { AIService } from "@/lib/services/ai-service";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: Request) {
   const { code } = await request.json();
@@ -9,7 +13,23 @@ export async function POST(request: Request) {
   }
 
   try {
-    const suggestions = await AIService.getAISuggestions(code);
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an AI assistant that provides code suggestions. Respond with only the suggested code changes in a JSON format with 'range' and 'text' properties.",
+        },
+        {
+          role: "user",
+          content: `Suggest improvements for this code:\n\n${code}`,
+        },
+      ],
+      max_tokens: 150,
+    });
+
+    const suggestions = JSON.parse(response.choices[0].message.content || "[]");
     return NextResponse.json({ suggestions });
   } catch (error) {
     console.error("Error in AI suggestions:", error);

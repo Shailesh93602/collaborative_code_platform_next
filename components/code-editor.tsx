@@ -7,8 +7,9 @@ import { useAI } from "@/hooks/use-ai";
 import { EditorInstance, AICodeSuggestion } from "@/types/global";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
-const LANGUAGE_MAPPING = {
+const LANGUAGE_MAPPING: Record<string, string> = {
   javascript: "javascript",
   typescript: "typescript",
   python: "python",
@@ -16,25 +17,31 @@ const LANGUAGE_MAPPING = {
   cpp: "cpp",
 };
 
+interface CodeEditorProps {
+  value: string;
+  onChange: (code: string) => void;
+  language: string;
+  className?: string;
+}
+
 export function CodeEditor({
   value,
   onChange,
   language,
   className,
-}: {
-  readonly value: string;
-  readonly onChange: (code: string) => void;
-  readonly language: string;
-  readonly className?: string;
-}) {
+}: CodeEditorProps) {
   const [code, setCode] = useState<string>(value);
+  const [error, setError] = useState<string | null>(null);
   const editorRef = useRef<EditorInstance | null>(null);
+  const monacoRef = useRef<Monaco | null>(null);
   const { bindMonacoEditor, awareness, conflicts, resolveConflict } =
     useCollaboration();
   const { getAISuggestions } = useAI();
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleEditorDidMount = (editor: EditorInstance, monaco: Monaco) => {
     editorRef.current = editor;
+    monacoRef.current = monaco;
     bindMonacoEditor(editor);
 
     editor.onDidChangeCursorPosition((e) => {
@@ -45,19 +52,36 @@ export function CodeEditor({
         });
       }
     });
+
+    // Enable code folding
+    editor.updateOptions({ folding: true });
+
+    // Enable minimap
+    editor.updateOptions({ minimap: { enabled: true } });
+
+    // Improve keyboard navigation
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10, () => {
+      editor.trigger("keyboard", "editor.action.nextEditorWidget", {});
+    });
+
+    setIsLoading(false);
   };
 
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       setCode(value);
       onChange(value);
+      setError(null);
     }
   };
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (editorRef.current) {
-        const suggestions: AICodeSuggestion[] = await getAISuggestions(code);
+      if (editorRef.current && monacoRef.current) {
+        const suggestions: AICodeSuggestion[] = await getAISuggestions(
+          code,
+          language
+        );
         editorRef.current.getModel()?.pushEditOperations(
           [],
           suggestions.map((s) => ({ range: s.range, text: s.text })),
@@ -67,7 +91,7 @@ export function CodeEditor({
     };
     const debounce = setTimeout(fetchSuggestions, 1000);
     return () => clearTimeout(debounce);
-  }, [code, getAISuggestions]);
+  }, [code, getAISuggestions, language]);
 
   useEffect(() => {
     if (awareness) {
@@ -75,24 +99,24 @@ export function CodeEditor({
         const states = awareness.getStates();
         const cursors = Array.from(states.entries())
           .filter(
-            ([clientId, state]: any) =>
+            ([clientId, state]) =>
               state.cursor && clientId !== awareness.clientID
           )
-          .map(([clientId, state]: any) => ({
+          .map(([clientId, state]) => ({
             clientId,
             cursor: state.cursor,
           }));
 
-        if (editorRef.current) {
+        if (editorRef.current && monacoRef.current) {
           editorRef.current.deltaDecorations(
             [],
-            cursors.map((c: any) => ({
-              range: {
-                startLineNumber: c.cursor.anchor.line,
-                startColumn: c.cursor.anchor.ch,
-                endLineNumber: c.cursor.head.line,
-                endColumn: c.cursor.head.ch,
-              },
+            cursors.map((c) => ({
+              range: new monacoRef.current!.Range(
+                c.cursor.anchor.line,
+                c.cursor.anchor.ch,
+                c.cursor.head.line,
+                c.cursor.head.ch
+              ),
               options: {
                 className: `cursor-${c.clientId}`,
                 hoverMessage: { value: `Cursor of user ${c.clientId}` },
@@ -105,25 +129,49 @@ export function CodeEditor({
   }, [awareness]);
 
   return (
-    <div className={`border rounded-lg overflow-hidden ${className}`}>
-      <Editor
-        height="100%"
-        language={LANGUAGE_MAPPING[language] || "plaintext"}
-        value={code}
-        onChange={handleEditorChange}
-        onMount={handleEditorDidMount}
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          suggest: {
-            showInlineDetails: true,
-            showStatusBar: true,
-          },
-        }}
-      />
+    <div
+      className={`border rounded-lg overflow-hidden ${className}`}
+      role="region"
+      aria-label="Code Editor"
+    >
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+      ) : (
+        <Editor
+          height="100%"
+          language={LANGUAGE_MAPPING[language] || "plaintext"}
+          value={code}
+          onChange={handleEditorChange}
+          onMount={handleEditorDidMount}
+          options={{
+            minimap: { enabled: true },
+            folding: true,
+            foldingHighlight: true,
+            foldingStrategy: "auto",
+            showFoldingControls: "always",
+            fontSize: 14,
+            lineNumbers: "on",
+            renderLineHighlight: "all",
+            suggest: {
+              showInlineDetails: true,
+              showStatusBar: true,
+            },
+            accessibilitySupport: "on",
+            renderValidationDecorations: "on",
+          }}
+        />
+      )}
+      {error && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       {conflicts.length > 0 && (
         <div className="p-4 bg-yellow-100">
-          <Alert variant="destructive">
+          <Alert variant="warning">
             <AlertTitle>Conflicts Detected</AlertTitle>
             <AlertDescription>
               {conflicts.map((conflict, index) => (
@@ -137,6 +185,7 @@ export function CodeEditor({
                     onClick={() =>
                       resolveConflict(index, conflict.localContent)
                     }
+                    aria-label="Keep Local Version"
                   >
                     Keep Local
                   </Button>
@@ -144,6 +193,7 @@ export function CodeEditor({
                     onClick={() =>
                       resolveConflict(index, conflict.remoteContent)
                     }
+                    aria-label="Keep Remote Version"
                   >
                     Keep Remote
                   </Button>

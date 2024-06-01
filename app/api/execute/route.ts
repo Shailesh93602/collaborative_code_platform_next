@@ -33,7 +33,7 @@ const languageConfigs = {
       // For simplicity, we'll transpile TypeScript to JavaScript and then execute it
       const { transpileModule } = await import("typescript");
       const jsCode = transpileModule(code, {
-        compilerOptions: { module: "commonjs" as any },
+        compilerOptions: { module: "commonjs" },
       }).outputText;
       return languageConfigs.javascript.execute(jsCode);
     },
@@ -45,10 +45,25 @@ const languageConfigs = {
       return pyodide.runPython(code);
     },
   },
+  java: {
+    execute: async (code: string) => {
+      // For Java, we'll use a simple approach of writing to a file and compiling
+      const fs = await import("fs/promises");
+      const path = await import("path");
+      const tempDir = await fs.mkdtemp("java-");
+      const javaFile = path.join(tempDir, "Main.java");
+
+      await fs.writeFile(javaFile, code);
+      await execAsync(`javac ${javaFile}`);
+      const { stdout, stderr } = await execAsync(`java -cp ${tempDir} Main`);
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
   cpp: {
     execute: async (code: string) => {
-      // For C++, we'll use a simple approach of writing to a file and compiling
-      // This is not secure for production use, but serves as a demonstration
       const fs = await import("fs/promises");
       const path = await import("path");
       const tempDir = await fs.mkdtemp("cpp-");
@@ -58,6 +73,60 @@ const languageConfigs = {
       await fs.writeFile(cppFile, code);
       await execAsync(`g++ ${cppFile} -o ${exeFile}`);
       const { stdout, stderr } = await execAsync(exeFile);
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
+  ruby: {
+    execute: async (code: string) => {
+      const { stdout, stderr } = await execAsync(
+        `ruby -e "${code.replace(/"/g, '\\"')}"`
+      );
+      return stdout || stderr;
+    },
+  },
+  go: {
+    execute: async (code: string) => {
+      const fs = await import("fs/promises");
+      const path = await import("path");
+      const tempDir = await fs.mkdtemp("go-");
+      const goFile = path.join(tempDir, "main.go");
+
+      await fs.writeFile(goFile, code);
+      const { stdout, stderr } = await execAsync(`go run ${goFile}`);
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
+  rust: {
+    execute: async (code: string) => {
+      const fs = await import("fs/promises");
+      const path = await import("path");
+      const tempDir = await fs.mkdtemp("rust-");
+      const rustFile = path.join(tempDir, "main.rs");
+
+      await fs.writeFile(rustFile, code);
+      await execAsync(`rustc ${rustFile} -o ${path.join(tempDir, "main")}`);
+      const { stdout, stderr } = await execAsync(path.join(tempDir, "main"));
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
+  swift: {
+    execute: async (code: string) => {
+      const fs = await import("fs/promises");
+      const path = await import("path");
+      const tempDir = await fs.mkdtemp("swift-");
+      const swiftFile = path.join(tempDir, "main.swift");
+
+      await fs.writeFile(swiftFile, code);
+      const { stdout, stderr } = await execAsync(`swift ${swiftFile}`);
 
       await fs.rm(tempDir, { recursive: true, force: true });
 

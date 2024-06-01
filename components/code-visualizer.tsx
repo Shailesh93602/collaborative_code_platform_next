@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { select } from "d3-selection";
 import { hierarchy, tree } from "d3-hierarchy";
 import { linkHorizontal } from "d3-shape";
-import { parse } from "@babel/parser";
-import traverse from "@babel/traverse";
 
 interface ASTNode {
   type: string;
@@ -14,55 +12,44 @@ interface ASTNode {
   children?: ASTNode[];
 }
 
-function parseCode(code: string): ASTNode {
-  const ast = parse(code, {
-    sourceType: "module",
-    plugins: ["jsx", "typescript"],
-  });
-
+function simpleParse(code: string): ASTNode {
+  const lines = code.split("\n");
   const root: ASTNode = { type: "Program", children: [] };
+  let currentFunction: ASTNode | null = null;
 
-  traverse(ast, {
-    enter(path) {
-      const node: ASTNode = { type: path.node.type };
-
-      if ("id" in path.node && path.node.id && "name" in path.node.id) {
-        node.name = path.node.id.name;
-      }
-
-      if ("value" in path.node && typeof path.node.value === "string") {
-        node.value = path.node.value;
-      }
-
-      if (!path.parent) {
-        root.children = [node];
+  lines.forEach((line) => {
+    if (line.trim().startsWith("function")) {
+      const functionName = line.match(/function\s+(\w+)/)?.[1] ?? "anonymous";
+      currentFunction = {
+        type: "FunctionDeclaration",
+        name: functionName,
+        children: [],
+      };
+      root.children?.push(currentFunction);
+    } else if (line.includes("=")) {
+      const [name, value] = line.split("=").map((s) => s.trim());
+      const node: ASTNode = { type: "VariableDeclaration", name, value };
+      if (currentFunction) {
+        currentFunction.children?.push(node);
       } else {
-        const parent = path.findParent((p) => p.node._astNode)?.node
-          ._astNode as ASTNode;
-        if (parent) {
-          parent.children = parent.children || [];
-          parent.children.push(node);
-        }
+        root.children?.push(node);
       }
-
-      path.node._astNode = node;
-    },
+    }
   });
 
   return root;
 }
 
-export function CodeVisualizer({ code }: { code: string }) {
+export function CodeVisualizer({ code }: { readonly code: string }) {
   const [ast, setAst] = useState<ASTNode | null>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const parsedAST = parseCode(code);
+    const parsedAST = simpleParse(code);
     setAst(parsedAST);
   }, [code]);
 
   useEffect(() => {
-    if (ast && svgRef.current) {
+    if (ast) {
       renderTree(ast);
     }
   }, [ast]);
@@ -72,9 +59,10 @@ export function CodeVisualizer({ code }: { code: string }) {
     const height = 400;
     const margin = { top: 20, right: 90, bottom: 30, left: 90 };
 
-    select(svgRef.current).selectAll("*").remove();
+    select("#tree-container").selectAll("*").remove();
 
-    const svg = select(svgRef.current)
+    const svg = select("#tree-container")
+      .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
@@ -121,9 +109,7 @@ export function CodeVisualizer({ code }: { code: string }) {
   return (
     <div className="border rounded-lg p-4 space-y-4">
       <h2 className="text-2xl font-semibold">Code Visualization</h2>
-      <div className="w-full h-[400px] overflow-auto">
-        <svg ref={svgRef}></svg>
-      </div>
+      <div id="tree-container" className="w-full h-[400px] overflow-auto"></div>
     </div>
   );
 }

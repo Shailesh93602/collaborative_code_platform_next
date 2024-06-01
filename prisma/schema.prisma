@@ -8,13 +8,39 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  name      String?
-  projects  Project[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String
+  name          String?
+  bio           String?
+  projects      Project[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  CodeSnippet   CodeSnippet[]
+  profile       UserProfile?
+  followedBy    Follows[]      @relation("following")
+  following     Follows[]      @relation("follower")
+}
+
+model UserProfile {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  user          User           @relation(fields: [userId], references: [id])
+  avatarUrl     String?
+  githubProfile String?
+  twitterHandle String?
+  websiteUrl    String?
+  skills        String[]
+}
+
+model Follows {
+  follower      User           @relation("follower", fields: [followerId], references: [id])
+  followerId    String
+  following     User           @relation("following", fields: [followingId], references: [id])
+  followingId   String
+  createdAt     DateTime       @default(now())
+
+  @@id([followerId, followingId])
 }
 
 model Project {
@@ -26,3 +52,15 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model CodeSnippet {
+  id        String   @id @default(cuid())
+  title     String
+  code      String
+  language  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+

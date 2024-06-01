@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Project {
   id: string;
@@ -11,66 +12,58 @@ interface Project {
   code: string;
 }
 
-export function ProjectManager({
-  onProjectLoad,
-}: {
+interface ProjectManagerProps {
+  projects: Project[] | undefined;
+  isLoading: boolean;
+  error: Error | null;
   onProjectLoad: (code: string) => void;
-}) {
-  const [projects, setProjects] = useState<Project[]>([]);
+}
+
+export function ProjectManager({
+  projects,
+  isLoading,
+  error,
+  onProjectLoad,
+}: ProjectManagerProps) {
   const [newProjectName, setNewProjectName] = useState("");
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const response = await fetch("/api/projects");
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data.projects);
-      } else {
-        throw new Error("Failed to fetch projects");
-      }
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch projects",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const createProject = async () => {
-    try {
+  const createProjectMutation = useMutation({
+    mutationFn: async (name: string) => {
       const response = await fetch("/api/projects", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: newProjectName, code: "// New project" }),
+        body: JSON.stringify({ name, code: "// New project" }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProjects([...projects, data.project]);
-        setNewProjectName("");
-        toast({
-          title: "Success",
-          description: "Project created successfully",
-        });
-      } else {
+      if (!response.ok) {
         throw new Error("Failed to create project");
       }
-    } catch (error) {
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      setNewProjectName("");
+      toast({
+        title: "Success",
+        description: "Project created successfully",
+      });
+    },
+    onError: (error) => {
       console.error(error);
       toast({
         title: "Error",
         description: "Failed to create project",
         variant: "destructive",
       });
+    },
+  });
+
+  const createProject = () => {
+    if (newProjectName) {
+      createProjectMutation.mutate(newProjectName);
     }
   };
 
@@ -82,6 +75,14 @@ export function ProjectManager({
     });
   };
 
+  if (isLoading) {
+    return <div>Loading projects...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading projects: {error.message}</div>;
+  }
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Project Manager</h2>
@@ -91,10 +92,15 @@ export function ProjectManager({
           value={newProjectName}
           onChange={(e) => setNewProjectName(e.target.value)}
         />
-        <Button onClick={createProject}>Create Project</Button>
+        <Button
+          onClick={createProject}
+          disabled={createProjectMutation.isPending}
+        >
+          {createProjectMutation.isPending ? "Creating..." : "Create Project"}
+        </Button>
       </div>
       <div className="space-y-2">
-        {projects.map((project) => (
+        {projects?.map((project) => (
           <div key={project.id} className="flex justify-between items-center">
             <span>{project.name}</span>
             <Button onClick={() => loadProject(project)}>Load</Button>

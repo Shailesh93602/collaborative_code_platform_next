@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -32,29 +33,26 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
       });
 
-      if (response.ok) {
-        const { token } = await response.json();
-        localStorage.setItem("token", token);
-        router.push("/");
+      if (result?.error) {
+        setError(result.error);
       } else {
-        const errorData = await response.json();
-        setError(errorData.error);
+        router.push("/");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
       setError("An unexpected error occurred. Please try again.");
     }
   };
@@ -69,12 +67,12 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <div>
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" {...register("email")} />
@@ -93,14 +91,14 @@ export default function LoginPage() {
                 </p>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Logging in..." : "Login"}
+            <Button type="submit" className="w-full">
+              Login
             </Button>
           </form>
         </CardContent>
         <CardFooter>
           <p className="text-sm text-center w-full">
-            Don&apos;t have an account?{" "}
+            Don't have an account?{" "}
             <Link href="/register" className="text-blue-500 hover:underline">
               Register
             </Link>

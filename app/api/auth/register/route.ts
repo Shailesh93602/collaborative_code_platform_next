@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import * as yup from "yup";
 
-const prisma = new PrismaClient();
-
 const schema = yup.object().shape({
-  email: yup.string().email().required(),
-  password: yup.string().min(8).required(),
-  name: yup.string().required(),
+  name: yup.string().required("Name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .required("Password is required"),
 });
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    await schema.validate(body);
+    await schema.validate(body, { abortEarly: false });
 
-    const { email, password, name } = body;
+    const { name, email, password } = body;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "User already exists" },
+        { error: "User with this email already exists" },
         { status: 400 }
       );
     }
@@ -33,9 +34,9 @@ export async function POST(request: Request) {
 
     const user = await prisma.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
-        name,
       },
     });
 
@@ -44,8 +45,19 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     if (error instanceof yup.ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      const validationErrors = error.inner.reduce((acc, err) => {
+        acc[err.path!] = err.message;
+        return acc;
+      }, {} as Record<string, string>);
+      return NextResponse.json(
+        { error: "Validation failed", validationErrors },
+        { status: 400 }
+      );
     }
-    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
+    console.error("Registration error:", error);
+    return NextResponse.json(
+      { error: "An error occurred during registration" },
+      { status: 500 }
+    );
   }
 }

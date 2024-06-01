@@ -37,12 +37,37 @@ contract VersionControl {
         uint256 timestamp;
     }
 
+    struct CodeReview {
+        address reviewer;
+        bool approved;
+        uint256 timestamp;
+    }
+
+    struct ReviewComment {
+        address author;
+        string content;
+        uint256 lineNumber;
+        uint256 timestamp;
+    }
+
+    struct EncryptedVersion {
+        string commitMessage;
+        bytes32 encryptedContentHash;
+        uint256 timestamp;
+        bytes32 parent;
+        EnumerableSet.Bytes32Set tags;
+        bool isEncrypted;
+    }
+
     mapping(bytes32 => Version) public versions;
     mapping(bytes32 => File[]) public trees;
     mapping(bytes32 => string) public diffs;
     mapping(uint256 => Branch) public branches;
     mapping(bytes32 => Conflict) public conflicts;
     mapping(bytes32 => Comment[]) public comments;
+    mapping(bytes32 => CodeReview) public codeReviews;
+    mapping(bytes32 => ReviewComment[]) public reviewComments;
+    mapping(bytes32 => EncryptedVersion) public encryptedVersions;
     uint256 public branchCount;
     uint256 public currentBranch;
 
@@ -57,6 +82,10 @@ contract VersionControl {
     event FileCreated(string path, bool isDirectory);
     event FileDeleted(string path);
     event FileRenamed(string oldPath, string newPath);
+    event FileOperation(string operation, string path);
+    event VersionReviewed(bytes32 indexed versionHash, address indexed reviewer, bool approved);
+    event ReviewCommentAdded(bytes32 indexed versionHash, address indexed author, uint256 lineNumber);
+    event EncryptedVersionSaved(bytes32 indexed versionHash, uint256 indexed branchId);
 
     constructor() {
         createBranch("main");
@@ -64,6 +93,8 @@ contract VersionControl {
     }
 
     function saveVersion(string memory commitMessage, File[] memory files) public returns (bytes32) {
+        require(bytes(commitMessage).length > 0, "Commit message cannot be empty");
+        require(files.length > 0, "At least one file is required");
         bytes32 parentHash = branches[currentBranch].versions.length() > 0
             ? branches[currentBranch].versions.at(branches[currentBranch].versions.length() - 1)
             : bytes32(0);
@@ -214,6 +245,7 @@ contract VersionControl {
 
         files.push(File(path, contentHash, isDirectory));
         emit FileCreated(path, isDirectory);
+        emit FileOperation("create", path);
     }
 
     function deleteFile(string memory path) public {
@@ -226,6 +258,7 @@ contract VersionControl {
                 files[i] = files[files.length - 1];
                 files.pop();
                 emit FileDeleted(path);
+                emit FileOperation("delete", path);
                 return;
             }
         }
@@ -242,6 +275,7 @@ contract VersionControl {
             if (keccak256(abi.encodePacked(files[i].path)) == keccak256(abi.encodePacked(oldPath))) {
                 files[i].path = newPath;
                 emit FileRenamed(oldPath, newPath);
+                emit FileOperation("rename", string(abi.encodePacked(oldPath, " to ", newPath)));
                 return;
             }
         }
@@ -322,6 +356,73 @@ contract VersionControl {
         }
 
         return false;
+    }
+
+    function getVersionCount() public view returns (uint256) {
+        return branches[currentBranch].versions.length();
+    }
+
+    function getVersionRange(uint256 start, uint256 end) public view returns (bytes32[] memory) {
+        require(start < end, "Invalid range");
+        require(end <= branches[currentBranch].versions.length(), "End out of range");
+
+        bytes32[] memory rangeVersions = new bytes32[](end - start);
+        for (uint256 i = start; i < end; i++) {
+            rangeVersions[i - start] = branches[currentBranch].versions.at(i);
+        }
+        return rangeVersions;
+    }
+
+    function approveVersion(bytes32 versionHash) public {
+        require(versions[versionHash].timestamp > 0, "Version does not exist");
+        codeReviews[versionHash] = CodeReview(msg.sender, true, block.timestamp);
+        emit VersionReviewed(versionHash, msg.sender, true);
+    }
+
+    function rejectVersion(bytes32 versionHash) public {
+        require(versions[versionHash].timestamp > 0, "Version does not exist");
+        codeReviews[versionHash] = CodeReview(msg.sender, false, block.timestamp);
+        emit VersionReviewed(versionHash, msg.sender, false);
+    }
+
+    function getApprovalStatus(bytes32 versionHash) public view returns (bool approved, address reviewer, uint256 timestamp) {
+        CodeReview storage review = codeReviews[versionHash];
+        return (review.approved, review.reviewer, review.timestamp);
+    }
+
+    function addReviewComment(bytes32 versionHash, string memory content, uint256 lineNumber) public {
+        require(versions[versionHash].timestamp > 0, "Version does not exist");
+        reviewComments[versionHash].push(ReviewComment(msg.sender, content, lineNumber, block.timestamp));
+        emit ReviewCommentAdded(versionHash, msg.sender, lineNumber);
+    }
+
+    function getReviewComments(bytes32 versionHash) public view returns (ReviewComment[] memory) {
+        return reviewComments[versionHash];
+    }
+
+    function saveEncryptedVersion(string memory commitMessage, bytes32 encryptedContentHash) public returns (bytes32) {
+        require(bytes(commitMessage).length > 0, "Commit message cannot be empty");
+        
+        bytes32 parentHash = branches[currentBranch].versions.length() > 0
+            ? branches[currentBranch].versions.at(branches[currentBranch].versions.length() - 1)
+            : bytes32(0);
+        
+        bytes32 versionHash = keccak256(abi.encodePacked(commitMessage, encryptedContentHash, block.timestamp, parentHash));
+
+        encryptedVersions[versionHash] = EncryptedVersion(commitMessage, encryptedContentHash, block.timestamp, parentHash, EnumerableSet.Bytes32Set(), true);
+        branches[currentBranch].versions.add(versionHash);
+
+        emit EncryptedVersionSaved(versionHash, currentBranch);
+        return versionHash;
+    }
+
+    function getEncryptedVersion(bytes32 hash) public view returns (string memory, bytes32, uint256, bytes32, string[] memory, bool) {
+        EncryptedVersion storage v = encryptedVersions[hash];
+        string[] memory tags = new string[](v.tags.length());
+        for (uint i = 0; i < v.tags.length(); i++) {
+            tags[i] = string(abi.encodePacked(v.tags.at(i)));
+        }
+        return (v.commitMessage, v.encryptedContentHash, v.timestamp, v.parent, tags, v.isEncrypted);
     }
 }
 

@@ -1,24 +1,20 @@
 import { useCallback } from "react";
 import { AICodeSuggestion } from "@/types/global";
+import { aiService } from "@/services/AIService";
 
 export function useAI() {
   const getAISuggestions = useCallback(
-    async (code: string): Promise<AICodeSuggestion[]> => {
+    async (
+      code: string,
+      language: string,
+      projectContext: string
+    ): Promise<AICodeSuggestion[]> => {
       try {
-        const response = await fetch("/api/ai/suggestions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to get AI suggestions");
-        }
-
-        const data = await response.json();
-        return data.suggestions;
+        return await aiService.getCodeSuggestions(
+          code,
+          language,
+          projectContext
+        );
       } catch (error) {
         console.error("Error getting AI suggestions:", error);
         return [];
@@ -27,27 +23,69 @@ export function useAI() {
     []
   );
 
-  const getAIResponse = useCallback(async (query: string): Promise<string> => {
-    try {
-      const response = await fetch("/api/ai/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to get AI response");
+  const getAIResponse = useCallback(
+    async (
+      query: string,
+      code: string,
+      language: string,
+      projectContext: string
+    ): Promise<string> => {
+      try {
+        const context = `The user is working with ${language} code in the following project context: ${projectContext}. Current code:
+${code}`;
+        return await aiService.getCodeExplanation(code, language, context);
+      } catch (error) {
+        console.error("Error getting AI response:", error);
+        return "I'm sorry, I encountered an error while processing your request.";
       }
+    },
+    []
+  );
 
-      const data = await response.json();
-      return data.response;
-    } catch (error) {
-      console.error("Error getting AI response:", error);
-      return "I'm sorry, I encountered an error while processing your request.";
-    }
-  }, []);
+  const getCodeExplanation = useCallback(
+    async (
+      code: string,
+      language: string,
+      projectContext: string
+    ): Promise<string> => {
+      try {
+        return await aiService.getCodeExplanation(
+          code,
+          language,
+          projectContext
+        );
+      } catch (error) {
+        console.error("Error getting code explanation:", error);
+        return "An error occurred while generating the explanation.";
+      }
+    },
+    []
+  );
 
-  return { getAISuggestions, getAIResponse };
+  const getOptimizationSuggestions = useCallback(
+    async (
+      code: string,
+      language: string,
+      projectContext: string
+    ): Promise<string> => {
+      try {
+        return await aiService.getOptimizationSuggestions(
+          code,
+          language,
+          projectContext
+        );
+      } catch (error) {
+        console.error("Error getting optimization suggestions:", error);
+        return "An error occurred while generating optimization suggestions.";
+      }
+    },
+    []
+  );
+
+  return {
+    getAISuggestions,
+    getAIResponse,
+    getCodeExplanation,
+    getOptimizationSuggestions,
+  };
 }

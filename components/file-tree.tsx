@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Folder,
   File,
@@ -10,17 +10,21 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CustomFile } from "@/types/file";
+import { FixedSizeList as List } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 interface FileTreeNode {
   name: string;
   type: "file" | "directory";
   children?: FileTreeNode[];
+  content?: string;
 }
 
 interface FileTreeProps {
   data: FileTreeNode;
-  onSelect: (path: string) => void;
-  onCreateFile: (path: string) => void;
+  onSelect: (file: CustomFile) => void;
+  onCreateFile: (path: string, content: string) => void;
   onCreateDirectory: (path: string) => void;
   onDelete: (path: string) => void;
   onRename: (oldPath: string, newPath: string) => void;
@@ -38,53 +42,103 @@ export function FileTree({
   const [editingNode, setEditingNode] = useState<string | null>(null);
   const [newNodeName, setNewNodeName] = useState("");
 
-  const toggleNode = (path: string) => {
-    const newExpandedNodes = new Set(expandedNodes);
-    if (newExpandedNodes.has(path)) {
-      newExpandedNodes.delete(path);
-    } else {
-      newExpandedNodes.add(path);
-    }
-    setExpandedNodes(newExpandedNodes);
-  };
+  const toggleNode = useCallback((path: string) => {
+    setExpandedNodes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(path)) {
+        newSet.delete(path);
+      } else {
+        newSet.add(path);
+      }
+      return newSet;
+    });
+  }, []);
 
-  const handleCreate = (path: string, type: "file" | "directory") => {
-    if (type === "file") {
-      onCreateFile(path);
-    } else {
-      onCreateDirectory(path);
-    }
-  };
+  const handleCreate = useCallback(
+    (path: string, type: "file" | "directory") => {
+      if (type === "file") {
+        onCreateFile(path, "");
+      } else {
+        onCreateDirectory(path);
+      }
+    },
+    [onCreateFile, onCreateDirectory]
+  );
 
-  const handleDelete = (path: string) => {
-    onDelete(path);
-  };
+  const handleDelete = useCallback(
+    async (path: string) => {
+      try {
+        await onDelete(path);
+      } catch (error) {
+        console.error("Error deleting file:", error);
+        // TODO: Add user-facing error message
+      }
+    },
+    [onDelete]
+  );
 
-  const handleRename = (oldPath: string) => {
+  const handleRename = useCallback(async (oldPath: string) => {
     setEditingNode(oldPath);
     setNewNodeName(oldPath.split("/").pop() || "");
-  };
+  }, []);
 
-  const submitRename = (oldPath: string) => {
-    const newPath = oldPath
-      .split("/")
-      .slice(0, -1)
-      .concat(newNodeName)
-      .join("/");
-    onRename(oldPath, newPath);
-    setEditingNode(null);
-    setNewNodeName("");
-  };
+  const submitRename = useCallback(
+    async (oldPath: string) => {
+      const newPath = oldPath
+        .split("/")
+        .slice(0, -1)
+        .concat(newNodeName)
+        .join("/");
+      try {
+        await onRename(oldPath, newPath);
+      } catch (error) {
+        console.error("Error renaming file:", error);
+        // TODO: Add user-facing error message
+      }
+      setEditingNode(null);
+      setNewNodeName("");
+    },
+    [newNodeName, onRename]
+  );
 
-  const renderNode = (node: FileTreeNode, path: string) => {
-    const isExpanded = expandedNodes.has(path);
-    const isEditing = editingNode === path;
+  const flattenTree = useCallback(
+    (node: FileTreeNode, path: string = ""): FileTreeNode[] => {
+      const currentPath = path ? `${path}/${node.name}` : node.name;
+      const result: FileTreeNode[] = [{ ...node, path: currentPath }];
+      if (
+        node.type === "directory" &&
+        node.children &&
+        expandedNodes.has(currentPath)
+      ) {
+        node.children.forEach((child) => {
+          result.push(...flattenTree(child, currentPath));
+        });
+      }
+      return result;
+    },
+    [expandedNodes]
+  );
 
-    return (
-      <div key={path} className="ml-4">
-        <div className="flex items-center">
+  const flattenedTree = flattenTree(data);
+
+  const renderNode = useCallback(
+    ({ index, style }: { index: number; style: React.CSSProperties }) => {
+      const node = flattenedTree[index];
+      const depth = node.path.split("/").length - 1;
+      const isExpanded = expandedNodes.has(node.path);
+      const isEditing = editingNode === node.path;
+
+      return (
+        <div
+          style={{ ...style, paddingLeft: `${depth * 20}px` }}
+          className="flex items-center"
+        >
           {node.type === "directory" && (
-            <Button variant="ghost" size="sm" onClick={() => toggleNode(path)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => toggleNode(node.path)}
+            >
               {isExpanded ? (
                 <ChevronDown className="h-4 w-4" />
               ) : (
@@ -101,22 +155,32 @@ export function FileTree({
             <Input
               value={newNodeName}
               onChange={(e) => setNewNodeName(e.target.value)}
-              onBlur={() => submitRename(path)}
-              onKeyPress={(e) => e.key === "Enter" && submitRename(path)}
+              onBlur={() => submitRename(node.path)}
+              onKeyPress={(e) => e.key === "Enter" && submitRename(node.path)}
               className="w-40"
             />
           ) : (
             <span
-              onClick={() => onSelect(path)}
+              onClick={() =>
+                onSelect({ path: node.path, content: node.content || "" })
+              }
               className="cursor-pointer hover:underline"
             >
               {node.name}
             </span>
           )}
-          <Button variant="ghost" size="sm" onClick={() => handleRename(path)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleRename(node.path)}
+          >
             <Edit className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => handleDelete(path)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDelete(node.path)}
+          >
             <Trash className="h-4 w-4" />
           </Button>
           {node.type === "directory" && (
@@ -124,7 +188,9 @@ export function FileTree({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleCreate(`${path}/new-file.txt`, "file")}
+                onClick={() =>
+                  handleCreate(`${node.path}/new-file.txt`, "file")
+                }
               >
                 <Plus className="h-4 w-4" />
                 <File className="h-4 w-4 ml-1" />
@@ -133,7 +199,7 @@ export function FileTree({
                 variant="ghost"
                 size="sm"
                 onClick={() =>
-                  handleCreate(`${path}/new-directory`, "directory")
+                  handleCreate(`${node.path}/new-directory`, "directory")
                 }
               >
                 <Plus className="h-4 w-4" />
@@ -142,16 +208,35 @@ export function FileTree({
             </>
           )}
         </div>
-        {node.type === "directory" && isExpanded && node.children && (
-          <div className="ml-4">
-            {node.children.map((child) =>
-              renderNode(child, `${path}/${child.name}`)
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
+      );
+    },
+    [
+      expandedNodes,
+      editingNode,
+      newNodeName,
+      onSelect,
+      handleRename,
+      handleDelete,
+      handleCreate,
+      submitRename,
+      toggleNode,
+    ]
+  );
 
-  return <div className="p-4">{renderNode(data, data.name)}</div>;
+  return (
+    <div className="h-full">
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            height={height}
+            itemCount={flattenedTree.length}
+            itemSize={35}
+            width={width}
+          >
+            {renderNode}
+          </List>
+        )}
+      </AutoSizer>
+    </div>
+  );
 }

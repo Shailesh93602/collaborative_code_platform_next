@@ -10,6 +10,11 @@ export function CodeExplainer({ code }: { readonly code: string }) {
   const [documentation, setDocumentation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { getAIResponse } = useAI();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -24,12 +29,8 @@ export function CodeExplainer({ code }: { readonly code: string }) {
   const generateExplanationAndDocs = async () => {
     setIsLoading(true);
     try {
-      const explanationPrompt = `Explain this code concisely:
-
-${code}`;
-      const docPrompt = `Generate documentation for this code:
-
-${code}`;
+      const explanationPrompt = `Explain this code concisely:\n\n${code}`;
+      const docPrompt = `Generate documentation for this code:\n\n${code}`;
 
       const [explanationResponse, docResponse] = await Promise.all([
         getAIResponse(explanationPrompt),
@@ -40,15 +41,14 @@ ${code}`;
       setDocumentation(docResponse);
     } catch (error) {
       console.error("Error generating explanation and documentation:", error);
-      setExplanation("Error generating explanation.");
-      setDocumentation("Error generating documentation.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (!mounted) return null;
   return (
-    <div className="space-y-4">
+    <div className="border rounded-lg p-4 space-y-4">
       <h2 className="text-2xl font-semibold">
         Code Explanation and Documentation
       </h2>

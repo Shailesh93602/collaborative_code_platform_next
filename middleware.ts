@@ -1,26 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (!token && request.nextUrl.pathname.startsWith("/api/")) {
+    return new NextResponse(
+      JSON.stringify({ error: "Authentication required" }),
+      { status: 401, headers: { "Content-Type": "application/json" } }
+    );
   }
 
-  try {
-    await jwtVerify(token, JWT_SECRET, {
-      algorithms: ["HS256"],
-    });
-    return NextResponse.next();
-  } catch (error) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/projects/:path*"],
+  matcher: "/api/:path*",
 };

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import * as Y from "yjs";
-import { useCollaborationContext } from "@/components/collaboration-provider";
+import { useCollaboration as useCollaborationContext } from "@/components/collaboration-provider";
 import { EditorInstance } from "@/types/global";
 
 type CollaborativeData = EditorInstance | Y.Array<any> | string | null;

@@ -42,18 +42,10 @@ export async function POST(request: Request) {
       expiresIn: "1d",
     });
 
-    const response = NextResponse.json({
+    return NextResponse.json({
       token,
       user: { id: user.id, email: user.email, name: user.name },
     });
-
-    response.cookies.set("token", token, {
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/",
-    });
-
-    return response;
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });

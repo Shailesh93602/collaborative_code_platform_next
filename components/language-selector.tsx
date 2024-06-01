@@ -15,6 +15,9 @@ const LANGUAGES = [
   { value: "java", label: "Java" },
   { value: "cpp", label: "C++" },
   { value: "go", label: "Go" },
+  { value: "ruby", label: "Ruby" },
+  { value: "rust", label: "Rust" },
+  { value: "swift", label: "Swift" },
 ];
 
 export function LanguageSelector({

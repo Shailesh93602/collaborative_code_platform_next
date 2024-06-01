@@ -12,6 +12,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export const executeCode = async (code: string, language: string) => {
+  const response = await api.post("/execute", { code, language });
+  return response.data;
+};
+
 export const login = async (email: string, password: string) => {
   const response = await api.post("/auth/login", { email, password });
   return response.data;
@@ -36,7 +41,7 @@ export const createProject = async (name: string) => {
   return response.data;
 };
 
-export const executeCode = async (code: string) => {
-  const response = await api.post("/execute", { code });
+export const fetchProjectData = async (projectId: string) => {
+  const response = await api.get(`/projects/${projectId}`);
   return response.data;
 };

@@ -7,7 +7,7 @@ interface Version {
   hash: string;
   message: string;
   timestamp: number;
-  parent?: string;
+  parent: string | null;
 }
 
 interface VersionGraphProps {
@@ -20,8 +20,8 @@ export function VersionGraph({ versions }: VersionGraphProps) {
   useEffect(() => {
     if (!svgRef.current || versions.length === 0) return;
 
-    const width = 600;
-    const height = 400;
+    const width = 800;
+    const height = 600;
     const nodeRadius = 5;
 
     const svg = d3
@@ -38,9 +38,9 @@ export function VersionGraph({ versions }: VersionGraphProps) {
         d3
           .forceLink()
           .id((d: any) => d.hash)
-          .distance(50)
+          .distance(100)
       )
-      .force("charge", d3.forceManyBody().strength(-100))
+      .force("charge", d3.forceManyBody().strength(-200))
       .force("center", d3.forceCenter(width / 2, height / 2));
 
     const links = svg
@@ -73,7 +73,7 @@ export function VersionGraph({ versions }: VersionGraphProps) {
       .attr("dx", 8)
       .attr("dy", 3);
 
-    simulation.on("tick", () => {
+    simulation.nodes(versions).on("tick", () => {
       links
         .attr("x1", (d: any) => d.source.x)
         .attr("y1", (d: any) => d.source.y)
@@ -84,6 +84,19 @@ export function VersionGraph({ versions }: VersionGraphProps) {
 
       labels.attr("x", (d: any) => d.x).attr("y", (d: any) => d.y);
     });
+
+    simulation
+      .force<
+        d3.ForceLink<
+          d3.SimulationNodeDatum,
+          d3.SimulationLinkDatum<d3.SimulationNodeDatum>
+        >
+      >("link")!
+      .links(
+        versions
+          .filter((v) => v.parent)
+          .map((v) => ({ source: v.parent, target: v.hash }))
+      );
   }, [versions]);
 
   return <svg ref={svgRef}></svg>;

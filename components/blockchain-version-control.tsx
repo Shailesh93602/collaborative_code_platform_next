@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,6 +20,7 @@ import {
   Tag,
   MessageSquare,
   Download,
+  Lock,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +33,31 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FileTree } from "@/components/file-tree";
 import { saveAs } from "file-saver";
+import { CustomFile } from "@/types/file";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import {
+  BlockchainErrorType,
+  handleBlockchainError,
+} from "@/lib/blockchain-error-handler";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { CodeReview } from "@/components/code-review";
+import { FileExplorer } from "./blockchain-version-control/FileExplorer";
+import { VersionHistory } from "./blockchain-version-control/VersionHistory";
+import {
+  generateEncryptionKey,
+  exportKey,
+  importKey,
+  encryptData,
+  decryptData,
+} from "@/utils/encryption";
+
+interface FileTreeNode {
+  name: string;
+  type: string;
+  content?: string;
+  children?: FileTreeNode[];
+}
 
 interface Version {
   hash: string;
@@ -46,21 +72,22 @@ interface Comment {
   timestamp: number;
 }
 
-interface File {
-  path: string;
-  content: string;
-}
-
 interface BlockchainVersionControlProps {
   code: string;
   onCodeUpdate: (code: string) => void;
+  files: CustomFile[];
+  onFilesUpdate: (files: CustomFile[]) => void;
 }
 
-const VERSIONS_PER_PAGE = 5;
+const VERSIONS_PER_PAGE = 20;
+
+const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
 export function BlockchainVersionControl({
   code,
   onCodeUpdate,
+  files,
+  onFilesUpdate,
 }: BlockchainVersionControlProps) {
   const [commitMessage, setCommitMessage] = useState("");
   const [versions, setVersions] = useState<Version[]>([]);
@@ -75,19 +102,22 @@ export function BlockchainVersionControl({
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const [pendingVersions, setPendingVersions] = useState<
-    { commitMessage: string; files: File[] }[]
+    { commitMessage: string; files: CustomFile[] }[]
   >([]);
-  const [fileTree, setFileTree] = useState<any>({
+  const [fileTree, setFileTree] = useState<FileTreeNode>({
     name: "root",
     type: "directory",
-    children: [
-      {
-        name: "main.js",
-        type: "file",
-      },
-    ],
+    children: [],
   });
-  const [selectedFile, setSelectedFile] = useState<string>("main.js");
+  const [selectedFile, setSelectedFile] = useState<string>();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [totalVersions, setTotalVersions] = useState(0);
+  const [showCodeReview, setShowCodeReview] = useState(false);
+  const [selectedVersionForReview, setSelectedVersionForReview] = useState<
+    string | null
+  >(null);
+  const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null);
+  const scrollRef = useRef(null);
   const {
     saveVersion,
     loadVersion,
@@ -112,43 +142,125 @@ export function BlockchainVersionControl({
     loading: versionsLoading,
     error: versionsError,
     invalidateCache,
-  } = useLocalCache("versionHistory", getAllVersions);
+  } = useLocalCache("versionHistory", () =>
+    getAllVersions(1, VERSIONS_PER_PAGE)
+  );
 
   useEffect(() => {
     if (cachedVersions) {
-      setVersions(cachedVersions);
+      setVersions(cachedVersions.versions);
+      setTotalVersions(cachedVersions.total);
     }
   }, [cachedVersions]);
 
-  const handleBlockchainError = useCallback(
-    (error: Error, action: string) => {
-      console.error(`Error ${action}:`, error);
-      toast({
-        title: "Error",
-        description: `Failed to ${action}. Please try again.`,
-        variant: "destructive",
+  useEffect(() => {
+    const tree = buildFileTree(files);
+    setFileTree(tree);
+  }, [files]);
+
+  const buildFileTree = (files: CustomFile[]): FileTreeNode => {
+    const root: FileTreeNode = {
+      name: "root",
+      type: "directory",
+      children: [],
+    };
+    files.forEach((file) => {
+      const parts = file.path.split("/");
+      let currentNode = root;
+      parts.forEach((part, index) => {
+        if (index === parts.length - 1) {
+          currentNode.children?.push({
+            name: part,
+            type: "file",
+            content: file.content,
+          });
+        } else {
+          let child = currentNode.children?.find(
+            (c) => c.name === part && c.type === "directory"
+          );
+          if (!child) {
+            child = { name: part, type: "directory", children: [] };
+            currentNode.children?.push(child);
+          }
+          currentNode = child;
+        }
       });
-    },
-    [toast]
-  );
+    });
+    return root;
+  };
+
+  useEffect(() => {
+    const initializeEncryptionKey = async () => {
+      let key = localStorage.getItem("encryptionKey");
+      if (!key) {
+        const newKey = await generateEncryptionKey();
+        const exportedKey = await exportKey(newKey);
+        localStorage.setItem("encryptionKey", exportedKey);
+        setEncryptionKey(newKey);
+      } else {
+        const importedKey = await importKey(key);
+        setEncryptionKey(importedKey);
+      }
+    };
+
+    initializeEncryptionKey();
+  }, []);
 
   const handleSave = useCallback(async () => {
-    if (!commitMessage) return;
+    if (!commitMessage || !encryptionKey) return;
     setIsLoading(true);
     try {
-      const files = [{ path: selectedFile, content: code }];
-      const result = await saveVersion(commitMessage, files);
-      setPendingVersions((prev) => [...prev, { commitMessage, files }]);
+      const filesToSave: CustomFile[] = [
+        { path: selectedFile!, content: code },
+      ];
+
+      // Encrypt the code before saving
+      const encryptedCode = await encryptData(code, encryptionKey);
+
+      // Handle large files
+      if (encryptedCode.length > CHUNK_SIZE) {
+        const chunks = Math.ceil(encryptedCode.length / CHUNK_SIZE);
+        for (let i = 0; i < chunks; i++) {
+          const start = i * CHUNK_SIZE;
+          const end = Math.min((i + 1) * CHUNK_SIZE, encryptedCode.length);
+          const chunk = encryptedCode.slice(start, end);
+          await saveVersion(commitMessage, [
+            { path: `${selectedFile!}.part${i}`, content: chunk },
+          ]);
+          setUploadProgress(((i + 1) / chunks) * 100);
+        }
+        // Save metadata
+        await saveVersion(commitMessage, [
+          {
+            path: `${selectedFile!}.metadata`,
+            content: JSON.stringify({ chunks, encrypted: true }),
+          },
+        ]);
+      } else {
+        await saveVersion(commitMessage, [
+          { path: selectedFile!, content: encryptedCode },
+        ]);
+      }
+
+      setPendingVersions((prev) => [
+        ...prev,
+        { commitMessage, files: filesToSave },
+      ]);
       setCommitMessage("");
       invalidateCache();
       toast({
         title: "Success",
-        description: "Version saved successfully",
+        description: "Encrypted version saved successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "saving version");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to save encrypted version",
+        details: error,
+      });
     } finally {
       setIsLoading(false);
+      setUploadProgress(0);
     }
   }, [
     commitMessage,
@@ -157,51 +269,8 @@ export function BlockchainVersionControl({
     saveVersion,
     invalidateCache,
     toast,
-    handleBlockchainError,
+    encryptionKey,
   ]);
-
-  const handleBatchSave = useCallback(async () => {
-    if (pendingVersions.length === 0) return;
-    setIsLoading(true);
-    try {
-      await batchSaveVersions(pendingVersions);
-      setPendingVersions([]);
-      fetchVersions();
-      toast({
-        title: "Success",
-        description: "Versions saved successfully",
-      });
-    } catch (error) {
-      handleBlockchainError(error as Error, "saving versions");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [
-    pendingVersions,
-    batchSaveVersions,
-    fetchVersions,
-    toast,
-    handleBlockchainError,
-  ]);
-
-  const handleLoad = async (hash: string) => {
-    setIsLoading(true);
-    try {
-      const result = await loadVersion(hash);
-      const mainFile = result.files.find((file) => file.path === "main.js");
-      if (mainFile) {
-        onCodeUpdate(mainFile.content);
-      }
-      toast({
-        title: "Success",
-        description: "Version loaded successfully",
-      });
-    } catch (error) {
-      handleBlockchainError(error as Error, "loading version");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const fetchVersions = async () => {
     setIsLoading(true);
@@ -215,14 +284,99 @@ export function BlockchainVersionControl({
       );
       setVersions(versionsWithTags);
     } catch (error) {
-      handleBlockchainError(error as Error, "fetching versions");
+      handleBlockchainError({
+        type: BlockchainErrorType.CONTRACT_INTERACTION_ERROR,
+        message: "Failed to fetch versions",
+        details: error,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePageChange = (page: number) => {
+  const handleBatchSave = useCallback(async () => {
+    if (pendingVersions.length === 0) return;
+    setIsLoading(true);
+    try {
+      await batchSaveVersions(pendingVersions);
+      setPendingVersions([]);
+      fetchVersions();
+      toast({
+        title: "Success",
+        description: "Versions saved successfully",
+      });
+    } catch (error) {
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to save versions",
+        details: error,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [pendingVersions, batchSaveVersions, fetchVersions, toast]);
+
+  const handleLoad = async (hash: string) => {
+    if (!encryptionKey) return;
+    setIsLoading(true);
+    try {
+      const result = await loadVersion(hash);
+      const mainFile = result.files.find((file) => file.path === selectedFile);
+      if (mainFile) {
+        if (mainFile.path.endsWith(".metadata")) {
+          // Handle large file
+          const metadata = JSON.parse(mainFile.content);
+          let fullContent = "";
+          for (let i = 0; i < metadata.chunks; i++) {
+            const chunkResult = await loadVersion(`${hash}.part${i}`);
+            fullContent += chunkResult.files[0].content;
+            setUploadProgress(((i + 1) / metadata.chunks) * 100);
+          }
+          const decryptedContent = await decryptData(
+            fullContent,
+            encryptionKey
+          );
+          onCodeUpdate(decryptedContent);
+        } else {
+          const decryptedContent = await decryptData(
+            mainFile.content,
+            encryptionKey
+          );
+          onCodeUpdate(decryptedContent);
+        }
+      }
+      toast({
+        title: "Success",
+        description: "Encrypted version loaded and decrypted successfully",
+      });
+    } catch (error) {
+      handleBlockchainError({
+        type: BlockchainErrorType.CONTRACT_INTERACTION_ERROR,
+        message: "Failed to load and decrypt version",
+        details: error,
+      });
+    } finally {
+      setIsLoading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handlePageChange = async (page: number) => {
     setCurrentPage(page);
+    setIsLoading(true);
+    try {
+      const result = await getAllVersions(page, VERSIONS_PER_PAGE);
+      setVersions(result.versions);
+      setTotalVersions(result.total);
+    } catch (error) {
+      handleBlockchainError({
+        type: BlockchainErrorType.CONTRACT_INTERACTION_ERROR,
+        message: "Failed to fetch versions",
+        details: error,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVersionSelect = (hash: string) => {
@@ -243,7 +397,11 @@ export function BlockchainVersionControl({
       setVersions(searchResults);
       setCurrentPage(1);
     } catch (error) {
-      handleBlockchainError(error as Error, "searching versions");
+      handleBlockchainError({
+        type: BlockchainErrorType.CONTRACT_INTERACTION_ERROR,
+        message: "Failed to search versions",
+        details: error,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -264,7 +422,11 @@ export function BlockchainVersionControl({
         description: "Conflict resolved successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "resolving conflict");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to resolve conflict",
+        details: error,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -282,7 +444,11 @@ export function BlockchainVersionControl({
         description: "Tag added successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "adding tag");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to add tag",
+        details: error,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -301,7 +467,11 @@ export function BlockchainVersionControl({
         description: "Comment added successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "adding comment");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to add comment",
+        details: error,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -313,81 +483,91 @@ export function BlockchainVersionControl({
       const fetchedComments = await getComments(versionHash);
       setComments(fetchedComments);
     } catch (error) {
-      handleBlockchainError(error as Error, "fetching comments");
+      handleBlockchainError({
+        type: BlockchainErrorType.CONTRACT_INTERACTION_ERROR,
+        message: "Failed to fetch comments",
+        details: error,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCreateFile = async (path: string) => {
+  const handleCreateFile = async (path: string, content: string) => {
     try {
-      await createFile(path, "");
-      fetchFileTree();
+      await createFile(path, content, false);
+      const newFiles = [...files, { path, content }];
+      onFilesUpdate(newFiles);
       toast({
         title: "Success",
         description: "File created successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "creating file");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to create file",
+        details: error,
+      });
     }
   };
 
   const handleCreateDirectory = async (path: string) => {
     try {
       await createFile(path, "", true);
-      fetchFileTree();
       toast({
         title: "Success",
         description: "Directory created successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "creating directory");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to create directory",
+        details: error,
+      });
     }
   };
 
   const handleDeleteFile = async (path: string) => {
     try {
       await deleteFile(path);
-      fetchFileTree();
+      const newFiles = files.filter((file) => file.path !== path);
+      onFilesUpdate(newFiles);
       toast({
         title: "Success",
         description: "File deleted successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "deleting file");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to delete file",
+        details: error,
+      });
     }
   };
 
   const handleRenameFile = async (oldPath: string, newPath: string) => {
     try {
       await renameFile(oldPath, newPath);
-      fetchFileTree();
+      const newFiles = files.map((file) =>
+        file.path === oldPath ? { ...file, path: newPath } : file
+      );
+      onFilesUpdate(newFiles);
       toast({
         title: "Success",
         description: "File renamed successfully",
       });
     } catch (error) {
-      handleBlockchainError(error as Error, "renaming file");
+      handleBlockchainError({
+        type: BlockchainErrorType.TRANSACTION_FAILED,
+        message: "Failed to rename file",
+        details: error,
+      });
     }
   };
 
-  const handleFileSelect = async (path: string) => {
-    setSelectedFile(path);
-    try {
-      const fileContent = await loadVersion(path);
-      onCodeUpdate(fileContent.code);
-    } catch (error) {
-      handleBlockchainError(error as Error, "loading file content");
-    }
-  };
-
-  const fetchFileTree = async () => {
-    try {
-      const tree = await getAllVersions();
-      setFileTree(tree);
-    } catch (error) {
-      handleBlockchainError(error as Error, "fetching file tree");
-    }
+  const handleFileSelect = (file: CustomFile) => {
+    onCodeUpdate(file.content);
+    setSelectedFile(file.path);
   };
 
   const handleRevert = async (versionHash: string) => {
@@ -405,7 +585,11 @@ export function BlockchainVersionControl({
         });
         fetchVersions();
       } catch (error) {
-        handleBlockchainError(error as Error, "reverting to version");
+        handleBlockchainError({
+          type: BlockchainErrorType.TRANSACTION_FAILED,
+          message: "Failed to revert to version",
+          details: error,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -424,10 +608,22 @@ export function BlockchainVersionControl({
     saveAs(blob, "version-history-export.json");
   };
 
-  const paginatedVersions = versions.slice(
-    (currentPage - 1) * VERSIONS_PER_PAGE,
-    currentPage * VERSIONS_PER_PAGE
-  );
+  const virtualizer = useVirtualizer({
+    count: totalVersions,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 40,
+    overscan: 5,
+  });
+
+  const visibleVersions = useMemo(() => {
+    const start = virtualizer.getVirtualItems()[0]?.index || 0;
+    return versions.slice(start, start + VERSIONS_PER_PAGE);
+  }, [versions, virtualizer]);
+
+  const handleReview = (hash: string) => {
+    setSelectedVersionForReview(hash);
+    setShowCodeReview(true);
+  };
 
   return (
     <Dialog>
@@ -439,7 +635,7 @@ export function BlockchainVersionControl({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>Blockchain Version Control</DialogTitle>
+          <DialogTitle>Blockchain Version Control (Encrypted)</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           {versionsError && (
@@ -458,9 +654,13 @@ export function BlockchainVersionControl({
               onChange={(e) => setCommitMessage(e.target.value)}
               disabled={isLoading}
             />
-            <Button onClick={handleSave} disabled={!commitMessage || isLoading}>
+            <Button
+              onClick={handleSave}
+              disabled={!commitMessage || isLoading || !encryptionKey}
+            >
               <Save className="h-4 w-4 mr-2" />
-              Queue Save
+              <Lock className="h-4 w-4 mr-2" />
+              Queue Encrypted Save
             </Button>
           </div>
           {pendingVersions.length > 0 && (
@@ -482,8 +682,8 @@ export function BlockchainVersionControl({
           <div className="flex space-x-4">
             <div className="w-1/3">
               <h3 className="text-sm font-medium mb-2">File Explorer</h3>
-              <FileTree
-                data={fileTree}
+              <FileExplorer
+                fileTree={fileTree}
                 onSelect={handleFileSelect}
                 onCreateFile={handleCreateFile}
                 onCreateDirectory={handleCreateDirectory}
@@ -493,71 +693,55 @@ export function BlockchainVersionControl({
             </div>
             <div className="w-2/3">
               <h3 className="text-sm font-medium mb-2">Version History</h3>
-              <ScrollArea className="h-[200px] border rounded">
+              <ScrollArea className="h-[200px] border rounded" ref={scrollRef}>
                 {versionsLoading ? (
                   <div className="flex items-center justify-center h-full">
                     Loading versions...
                   </div>
                 ) : (
-                  paginatedVersions.map((version) => (
-                    <div
-                      key={version.hash}
-                      className="flex justify-between items-center p-2 hover:bg-accent"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedVersions.includes(version.hash)}
-                        onChange={() => handleVersionSelect(version.hash)}
-                        className="mr-2"
-                      />
-                      <span className="text-sm truncate flex-grow">
-                        {version.message}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        {version.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleLoad(version.hash)}
-                          disabled={isLoading}
-                        >
-                          <Upload className="h-4 w-4" />
-                          <span className="sr-only">Load version</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewComments(version.hash)}
-                          disabled={isLoading}
-                        >
-                          <MessageSquare className="h-4 w-4" />
-                          <span className="sr-only">View comments</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRevert(version.hash)}
-                          disabled={isLoading}
-                        >
-                          Revert
-                        </Button>
+                  <div
+                    style={{
+                      height: `${virtualizer.getTotalSize()}px`,
+                      width: "100%",
+                      position: "relative",
+                    }}
+                  >
+                    {virtualizer.getVirtualItems().map((virtualItem) => (
+                      <div
+                        key={virtualItem.key}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: `${virtualItem.size}px`,
+                          transform: `translateY(${virtualItem.start}px)`,
+                        }}
+                      >
+                        {visibleVersions[virtualItem.index] && (
+                          <VersionItem
+                            version={visibleVersions[virtualItem.index]}
+                            isSelected={selectedVersions.includes(
+                              visibleVersions[virtualItem.index].hash
+                            )}
+                            onSelect={handleVersionSelect}
+                            onLoad={handleLoad}
+                            onViewComments={handleViewComments}
+                            onRevert={handleRevert}
+                            onReview={handleReview}
+                            isLoading={isLoading}
+                          />
+                        )}
                       </div>
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </ScrollArea>
             </div>
           </div>
           <Pagination
             currentPage={currentPage}
-            totalPages={Math.ceil(versions.length / VERSIONS_PER_PAGE)}
+            totalPages={Math.ceil(totalVersions / VERSIONS_PER_PAGE)}
             onPageChange={handlePageChange}
           />
           {selectedVersions.length === 2 && (
@@ -643,8 +827,96 @@ export function BlockchainVersionControl({
             <Download className="h-4 w-4 mr-2" />
             Export History
           </Button>
+          {uploadProgress > 0 && (
+            <div>
+              <Label>Upload Progress</Label>
+              <Progress value={uploadProgress} className="w-full" />
+            </div>
+          )}
+          {showCodeReview && selectedVersionForReview && (
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Code Review</h3>
+              <CodeReview versionHash={selectedVersionForReview} code={code} />
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function VersionItem({
+  version,
+  isSelected,
+  onSelect,
+  onLoad,
+  onViewComments,
+  onRevert,
+  onReview,
+  isLoading,
+}: {
+  version: Version;
+  isSelected: boolean;
+  onSelect: (hash: string) => void;
+  onLoad: (hash: string) => void;
+  onViewComments: (hash: string) => void;
+  onRevert: (hash: string) => void;
+  onReview: (hash: string) => void;
+  isLoading: boolean;
+}) {
+  return (
+    <div className="flex justify-between items-center p-2 hover:bg-accent">
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={() => onSelect(version.hash)}
+        className="mr-2"
+      />
+      <span className="text-sm truncate flex-grow">{version.message}</span>
+      <div className="flex items-center space-x-2">
+        {version.tags.map((tag, index) => (
+          <span
+            key={index}
+            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+          >
+            {tag}
+          </span>
+        ))}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onLoad(version.hash)}
+          disabled={isLoading}
+        >
+          <Upload className="h-4 w-4" />
+          <span className="sr-only">Load version</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onViewComments(version.hash)}
+          disabled={isLoading}
+        >
+          <MessageSquare className="h-4 w-4" />
+          <span className="sr-only">View comments</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onRevert(version.hash)}
+          disabled={isLoading}
+        >
+          Revert
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onReview(version.hash)}
+          disabled={isLoading}
+        >
+          Review
+        </Button>
+      </div>
+    </div>
   );
 }

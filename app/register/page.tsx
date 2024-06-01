@@ -26,6 +26,10 @@ const schema = yup.object().shape({
     .string()
     .min(8, "Password must be at least 8 characters")
     .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
 });
 
 type FormData = yup.InferType<typeof schema>;
@@ -36,7 +40,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
@@ -50,13 +54,13 @@ export default function RegisterPage() {
       });
 
       if (response.ok) {
-        router.push("/login?registered=true");
+        router.push("/login");
       } else {
         const errorData = await response.json();
-        setError(errorData.error);
+        setError(errorData.error || "Registration failed. Please try again.");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Registration error:", error);
       setError("An unexpected error occurred. Please try again.");
     }
   };
@@ -71,12 +75,12 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <div>
               <Label htmlFor="name">Name</Label>
               <Input id="name" {...register("name")} />
@@ -104,8 +108,21 @@ export default function RegisterPage() {
                 </p>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Registering..." : "Register"}
+            <div>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                {...register("confirmPassword")}
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+            <Button type="submit" className="w-full">
+              Register
             </Button>
           </form>
         </CardContent>
