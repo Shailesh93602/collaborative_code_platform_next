@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AIService } from "@/lib/services/ai-service";
+import { aiService } from "@/services/AIService";
 
 export async function POST(request: Request) {
   const { code, type } = await request.json();
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const response = await AIService.getCodeExplanation(code, type);
+    const response = await aiService.getCodeExplanation(code, type);
     return NextResponse.json({ response });
   } catch (error) {
     console.error("Error in AI explanation:", error);

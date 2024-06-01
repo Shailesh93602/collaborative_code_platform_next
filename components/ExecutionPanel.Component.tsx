@@ -6,13 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDistributedExecution } from "@/hooks/useDistributedExecution.component";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, StopCircle } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { debounce } from "lodash";
 import { logError } from "@/lib/errorLogging.util";

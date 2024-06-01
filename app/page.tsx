@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useQuery } from "react-query";
 import { CodeEditor } from "@/components/CodeEditor.component";
 import { ExecutionPanel } from "@/components/ExecutionPanel.Component";
@@ -20,14 +20,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { signIn, signOut } from "next-auth/react";
 import { CollaborationProvider } from "@/components/collaboration-provider";
 import { useProjectContext } from "@/contexts/ProjectContext.context";
 import { fetchProjectData } from "@/lib/api.util";
 import { UserOnboarding } from "@/components/user-onboarding";
 import { PluginManager } from "@/components/plugin-manager";
 import { CustomFile } from "@/types/file";
-import { createFile } from "@/lib/api.util";
 
 const INITIAL_CODE = {
   javascript: `// Your JavaScript code here
@@ -62,20 +60,20 @@ func main() {
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const { projectId, setProjectId } = useProjectContext();
+  const { projectId } = useProjectContext();
   const [language, setLanguage] = useState<string>("javascript");
-  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showOnboarding] = useState(true);
   const [files, setFiles] = useState<CustomFile[]>([
     { path: "main.js", content: INITIAL_CODE.javascript },
   ]);
 
-  const {
-    data: projectData,
-    isLoading,
-    error,
-  } = useQuery(["projectData", projectId], () => fetchProjectData(projectId), {
-    enabled: !!projectId,
-  });
+  const { data: projectData } = useQuery(
+    ["projectData", projectId],
+    () => fetchProjectData(projectId ?? ""),
+    {
+      enabled: !!projectId,
+    }
+  );
 
   const [code, setCode] = useState<string>(INITIAL_CODE[language]);
 
@@ -86,15 +84,15 @@ export default function Home() {
     }
   }, [projectData]);
 
-  const handleCreateFile = async (path: string, content: string) => {
-    try {
-      await createFile(path, content, false);
-      setFiles([...files, { path, content }]);
-    } catch (error) {
-      console.error("Error creating file:", error);
-      // TODO: Add user-facing error message
-    }
-  };
+  // const handleCreateFile = async (path: string, content: string) => {
+  //   try {
+  //     await createFile(path, content, false);
+  //     setFiles([...files, { path, content }]);
+  //   } catch (error) {
+  //     console.error("Error creating file:", error);
+  //     // TODO: Add user-facing error message
+  //   }
+  // };
 
   // Add similar error handling to handleCreateDirectory, handleDeleteFile, and handleRenameFile functions
 

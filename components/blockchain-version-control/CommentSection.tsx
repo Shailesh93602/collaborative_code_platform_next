@@ -14,7 +14,7 @@ interface Comment {
 export function CommentSection() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [selectedVersion] = useState<string | null>(null);
   const { addComment, getComments } = useWeb3();
 
   useEffect(() => {

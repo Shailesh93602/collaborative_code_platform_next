@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useWeb3 } from "@/hooks/userWeb3.hook";
@@ -17,8 +16,8 @@ interface Comment {
 }
 
 interface CodeReviewProps {
-  versionHash: string;
-  code: string;
+  readonly versionHash: string;
+  readonly code: string;
 }
 
 export function CodeReview({ versionHash, code }: CodeReviewProps) {

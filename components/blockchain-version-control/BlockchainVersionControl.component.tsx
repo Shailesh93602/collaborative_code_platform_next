@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,10 +30,10 @@ import {
 } from "@/lib/blockchainErrorHandler.util";
 
 interface BlockchainVersionControlProps {
-  code: string;
-  onCodeUpdate: (code: string) => void;
-  files: CustomFile[];
-  onFilesUpdate: (files: CustomFile[]) => void;
+  readonly code: string;
+  readonly onCodeUpdate: (code: string) => void;
+  readonly files: CustomFile[];
+  readonly onFilesUpdate: (files: CustomFile[]) => void;
 }
 
 export function BlockchainVersionControl({

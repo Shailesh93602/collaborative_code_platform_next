@@ -6,7 +6,7 @@ import { Github, Twitter, Globe } from "lucide-react";
 import { FollowButton } from "./follow-button";
 
 interface UserProfileProps {
-  user: {
+  readonly user: {
     id: string;
     name: string;
     email: string;
@@ -19,7 +19,7 @@ interface UserProfileProps {
       skills: string[];
     };
   };
-  isOwnProfile: boolean;
+  readonly isOwnProfile: boolean;
 }
 
 export function UserProfile({ user, isOwnProfile }: UserProfileProps) {

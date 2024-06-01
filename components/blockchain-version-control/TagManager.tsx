@@ -6,7 +6,7 @@ import { Tag } from "lucide-react";
 
 export function TagManager() {
   const [newTag, setNewTag] = useState("");
-  const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [selectedVersion] = useState<string | null>(null);
   const { addTag } = useWeb3();
 
   const handleAddTag = async () => {

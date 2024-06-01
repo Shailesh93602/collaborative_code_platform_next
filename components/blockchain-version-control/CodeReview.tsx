@@ -5,14 +5,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CodeReviewProps {
-  code: string;
+  readonly code: string;
 }
 
 export function CodeReview({ code }: CodeReviewProps) {
   const [reviewComments, setReviewComments] = useState<string>("");
-  const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
-  const { addReviewComment, getReviewComments, approveVersion, rejectVersion } =
-    useWeb3();
+  const [selectedVersion] = useState<string | null>(null);
+  const { addReviewComment, approveVersion, rejectVersion } = useWeb3();
 
   const handleAddReviewComment = async () => {
     if (!reviewComments || !selectedVersion) return;

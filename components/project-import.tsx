@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Github } from "lucide-react";
 import { useToast } from "@/hooks/useToast.hook";
 
@@ -44,6 +43,7 @@ export function ProjectImport() {
       });
       setRepoUrl("");
     } catch (error) {
+      console.error(error);
       toast({
         title: "Import Failed",
         description:

@@ -21,8 +21,8 @@ export function AIAssistant({
   code,
   language,
 }: {
-  code: string;
-  language: string;
+  readonly code: string;
+  readonly language: string;
 }) {
   const [query, setQuery] = useState("");
   const [conversation, setConversation] = useState<Message[]>([]);

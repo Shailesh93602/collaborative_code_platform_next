@@ -15,7 +15,7 @@ export function EncryptionManager() {
   }, []);
 
   const initializeEncryptionKey = async () => {
-    let key = localStorage.getItem("encryptionKey");
+    const key = localStorage.getItem("encryptionKey");
     if (!key) {
       const newKey = await generateEncryptionKey();
       const exportedKey = await exportKey(newKey);

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,28 +9,32 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 const steps = [
   {
-    title: 'Welcome to the Collaborative Code Platform',
-    description: 'This platform allows you to write, execute, and collaborate on code in real-time.',
+    title: "Welcome to the Collaborative Code Platform",
+    description:
+      "This platform allows you to write, execute, and collaborate on code in real-time.",
   },
   {
-    title: 'Code Editor',
-    description: 'Use our powerful code editor to write and edit your code. It supports multiple languages and provides syntax highlighting.',
+    title: "Code Editor",
+    description:
+      "Use our powerful code editor to write and edit your code. It supports multiple languages and provides syntax highlighting.",
   },
   {
-    title: 'Execution Panel',
-    description: 'Run your code directly in the browser and see the output in real-time.',
+    title: "Execution Panel",
+    description:
+      "Run your code directly in the browser and see the output in real-time.",
   },
   {
-    title: 'Visualization Studio',
-    description: 'Visualize your data with interactive charts and graphs.',
+    title: "Visualization Studio",
+    description: "Visualize your data with interactive charts and graphs.",
   },
   {
-    title: 'Collaboration Features',
-    description: 'Work together with your team in real-time. See others' cursors and changes as they happen.',
+    title: "Collaboration Features",
+    description:
+      "Work together with your team in real-time. See other&apos;s cursors and changes as they happen.",
   },
 ];
 
@@ -64,11 +68,10 @@ export function UserOnboarding() {
             Skip Tutorial
           </Button>
           <Button onClick={handleNext}>
-            {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+            {currentStep === steps.length - 1 ? "Finish" : "Next"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-

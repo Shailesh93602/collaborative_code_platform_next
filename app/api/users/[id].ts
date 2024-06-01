@@ -35,6 +35,7 @@ export default async function handler(
       }
 
       const { password, ...userWithoutPassword } = user;
+      console.log(password);
       return res.status(200).json(userWithoutPassword);
     } catch (error) {
       console.error("Error fetching user:", error);

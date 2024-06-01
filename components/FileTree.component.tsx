@@ -22,12 +22,12 @@ interface FileTreeNode {
 }
 
 interface FileTreeProps {
-  data: FileTreeNode;
-  onSelect: (file: CustomFile) => void;
-  onCreateFile: (path: string, content: string) => void;
-  onCreateDirectory: (path: string) => void;
-  onDelete: (path: string) => void;
-  onRename: (oldPath: string, newPath: string) => void;
+  readonly data: FileTreeNode;
+  readonly onSelect: (file: CustomFile) => void;
+  readonly onCreateFile: (path: string, content: string) => void;
+  readonly onCreateDirectory: (path: string) => void;
+  readonly onDelete: (path: string) => void;
+  readonly onRename: (oldPath: string, newPath: string) => void;
 }
 
 export function FileTree({

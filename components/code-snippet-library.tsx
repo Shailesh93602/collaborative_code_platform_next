@@ -45,6 +45,7 @@ export function CodeSnippetLibrary() {
         throw new Error("Failed to fetch snippets");
       }
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error",
         description: "Failed to fetch code snippets. Please try again.",
@@ -78,6 +79,7 @@ export function CodeSnippetLibrary() {
         throw new Error("Failed to save snippet");
       }
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error",
         description: "Failed to save code snippet. Please try again.",
@@ -89,6 +91,7 @@ export function CodeSnippetLibrary() {
   };
 
   const handleUseSnippet = (snippet: CodeSnippet) => {
+    console.log(snippet);
     // This function will be called from the parent component
     // to insert the snippet into the main code editor
   };

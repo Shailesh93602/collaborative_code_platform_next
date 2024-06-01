@@ -2,14 +2,13 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth.util";
 import prisma from "@/lib/prisma.util";
-import { CustomFile } from "@/types/file";
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user) {
+  if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

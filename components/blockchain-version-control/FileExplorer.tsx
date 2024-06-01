@@ -20,6 +20,7 @@ export function FileExplorer({
   };
 
   const handleCreateDirectory = async (path: string) => {
+    console.log(path);
     // Directories are implicitly created when files are added
     // No need to explicitly create directories in this implementation
   };

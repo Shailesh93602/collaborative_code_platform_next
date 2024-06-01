@@ -15,12 +15,12 @@ import {
   GitBranch,
   Save,
   Upload,
-  Search,
   AlertTriangle,
   Tag,
   MessageSquare,
   Download,
   Lock,
+  AlertCircle,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/useToast.hook";
@@ -29,9 +29,7 @@ import { DiffViewer } from "@/components/diff-viewer";
 import { BranchManager } from "@/components/branch-manager";
 import { VersionGraph } from "@/components/version-graph";
 import { useLocalCache } from "@/hooks/useLocalCache.component";
-import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { FileTree } from "@/components/FileTree.component";
 import { saveAs } from "file-saver";
 import { CustomFile } from "@/types/file";
 import { Label } from "@/components/ui/label";
@@ -43,7 +41,6 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { CodeReview } from "@/components/code-review";
 import { FileExplorer } from "./blockchain-version-control/FileExplorer";
-import { VersionHistory } from "./blockchain-version-control/VersionHistory";
 import {
   generateEncryptionKey,
   exportKey,
@@ -73,10 +70,10 @@ interface Comment {
 }
 
 interface BlockchainVersionControlProps {
-  code: string;
-  onCodeUpdate: (code: string) => void;
-  files: CustomFile[];
-  onFilesUpdate: (files: CustomFile[]) => void;
+  readonly code: string;
+  readonly onCodeUpdate: (code: string) => void;
+  readonly files: CustomFile[];
+  readonly onFilesUpdate: (files: CustomFile[]) => void;
 }
 
 const VERSIONS_PER_PAGE = 20;
@@ -94,7 +91,6 @@ export function BlockchainVersionControl({
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedVersions, setSelectedVersions] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [conflicts, setConflicts] = useState<
     { id: string; sourceVersion: string; targetVersion: string }[]
   >([]);
@@ -122,7 +118,6 @@ export function BlockchainVersionControl({
     saveVersion,
     loadVersion,
     getAllVersions,
-    searchVersions,
     resolveConflict,
     addTag,
     getTags,
@@ -191,7 +186,7 @@ export function BlockchainVersionControl({
 
   useEffect(() => {
     const initializeEncryptionKey = async () => {
-      let key = localStorage.getItem("encryptionKey");
+      const key = localStorage.getItem("encryptionKey");
       if (!key) {
         const newKey = await generateEncryptionKey();
         const exportedKey = await exportKey(newKey);
@@ -390,22 +385,22 @@ export function BlockchainVersionControl({
     });
   };
 
-  const handleSearch = async () => {
-    setIsLoading(true);
-    try {
-      const searchResults = await searchVersions(searchQuery);
-      setVersions(searchResults);
-      setCurrentPage(1);
-    } catch (error) {
-      handleBlockchainError({
-        type: BlockchainErrorType.CONTRACT_INTERACTION_ERROR,
-        message: "Failed to search versions",
-        details: error,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleSearch = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const searchResults = await searchVersions(searchQuery);
+  //     setVersions(searchResults);
+  //     setCurrentPage(1);
+  //   } catch (error) {
+  //     handleBlockchainError({
+  //       type: BlockchainErrorType.CONTRACT_INTERACTION_ERROR,
+  //       message: "Failed to search versions",
+  //       details: error,
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleResolveConflict = async (
     conflictId: string,

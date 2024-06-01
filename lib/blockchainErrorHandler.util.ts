@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/useToast.hook";
 
 export enum BlockchainErrorType {
   CONNECTION_ERROR = "CONNECTION_ERROR",

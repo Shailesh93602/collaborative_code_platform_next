@@ -171,7 +171,7 @@ export function CodeEditor({
       )}
       {conflicts.length > 0 && (
         <div className="p-4 bg-yellow-100">
-          <Alert variant="warning">
+          <Alert variant="destructive">
             <AlertTitle>Conflicts Detected</AlertTitle>
             <AlertDescription>
               {conflicts.map((conflict, index) => (

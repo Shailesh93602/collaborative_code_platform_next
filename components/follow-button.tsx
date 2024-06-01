@@ -1,9 +1,10 @@
+"use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/useToast.hook";
 
 interface FollowButtonProps {
-  userId: string;
+  readonly userId: string;
 }
 
 export function FollowButton({ userId }: FollowButtonProps) {
@@ -33,6 +34,7 @@ export function FollowButton({ userId }: FollowButtonProps) {
         throw new Error("Failed to update follow status");
       }
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error",
         description: "Failed to update follow status. Please try again.",
