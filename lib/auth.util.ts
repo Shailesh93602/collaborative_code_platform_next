@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import { compare } from "bcryptjs";
+import DiscordProvider from "next-auth/providers/discord";
 
 const prisma = new PrismaClient();
 
@@ -41,6 +42,10 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+    DiscordProvider({
+      clientId: process.env.CLIENT_ID as string,
+      clientSecret: process.env.CLIENT_SECRET as string,
+    }),
   ],
   session: {
     strategy: "jwt",
@@ -62,4 +67,5 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };

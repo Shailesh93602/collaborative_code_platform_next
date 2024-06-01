@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAI } from "@/hooks/use-ai";
+import { useAI } from "@/hooks/useAI.hook";
 
 export function CodeExplainer({ code }: { readonly code: string }) {
   const [explanation, setExplanation] = useState("");

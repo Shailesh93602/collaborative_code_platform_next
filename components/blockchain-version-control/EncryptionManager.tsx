@@ -5,7 +5,7 @@ import {
   importKey,
   encryptData,
   decryptData,
-} from "@/utils/encryption";
+} from "@/lib/encryption.util";
 
 export function EncryptionManager() {
   const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null);

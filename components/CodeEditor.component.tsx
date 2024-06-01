@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
 import { useCollaboration } from "@/components/collaboration-provider";
-import { useAI } from "@/hooks/use-ai";
+import { useAI } from "@/hooks/useAI.hook";
 import { EditorInstance, AICodeSuggestion } from "@/types/global";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

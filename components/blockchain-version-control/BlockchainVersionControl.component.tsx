@@ -10,9 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useWeb3 } from "@/hooks/use-web3";
+import { useWeb3 } from "@/hooks/userWeb3.hook";
 import { GitBranch, Save, Lock } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast.hook";
 import { CustomFile } from "@/types/file";
 import { VersionHistory } from "./VersionHistory";
 import { FileExplorer } from "./FileExplorer";
@@ -27,7 +27,7 @@ import { CodeReview } from "./CodeReview";
 import {
   BlockchainErrorType,
   handleBlockchainError,
-} from "@/lib/blockchain-error-handler";
+} from "@/lib/blockchainErrorHandler.util";
 
 interface BlockchainVersionControlProps {
   code: string;

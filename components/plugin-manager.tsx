@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { pluginManager } from "@/lib/plugin-manager";
+import { pluginManager } from "@/lib/pluginManager.util";
 import { Plugin } from "@/types/plugin";
 
 export function PluginManager() {

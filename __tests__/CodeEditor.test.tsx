@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
-import { CodeEditor } from "../components/code-editor";
+import { CodeEditor } from "../components/CodeEditor.component";
 import "@testing-library/jest-dom";
 
 jest.mock("@monaco-editor/react", () => {

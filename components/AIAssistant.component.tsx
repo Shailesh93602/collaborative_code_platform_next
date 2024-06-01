@@ -4,13 +4,13 @@ import { FormEvent, useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAI } from "@/hooks/use-ai";
+import { useAI } from "@/hooks/useAI.hook";
 import { Card, CardContent } from "@/components/ui/card";
 import { Send, Code, Zap } from "lucide-react";
 import { AICodeSuggestion } from "@/types/global";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useProjectContext } from "@/contexts/project-context";
-import { useLocalCache } from "@/hooks/use-local-cache";
+import { useProjectContext } from "@/contexts/ProjectContext.context";
+import { useLocalCache } from "@/hooks/useLocalCache.component";
 
 type Message = {
   role: "user" | "assistant";

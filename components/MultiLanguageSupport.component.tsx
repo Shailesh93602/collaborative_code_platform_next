@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAI } from "@/hooks/use-ai";
+import { useAI } from "@/hooks/useAI.hook";
 
 const LANGUAGES = [
   { code: "en", name: "English" },

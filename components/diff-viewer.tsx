@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { diffLines, Change } from "diff";
-import { useWeb3 } from "@/hooks/use-web3";
+import { useWeb3 } from "@/hooks/userWeb3.hook";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DiffViewerProps {

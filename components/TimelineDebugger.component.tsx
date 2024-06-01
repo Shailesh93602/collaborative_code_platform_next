@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useWeb3 } from "@/hooks/use-web3";
+import { useWeb3 } from "@/hooks/userWeb3.hook";
 
 interface DebugStep {
   step: number;

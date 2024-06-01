@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useWeb3 } from "@/hooks/use-web3";
-import { useToast } from "@/hooks/use-toast";
+import { useWeb3 } from "@/hooks/userWeb3.hook";
+import { useToast } from "@/hooks/useToast.hook";
 
 interface Comment {
   id: string;

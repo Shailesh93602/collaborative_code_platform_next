@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCollaboration } from "@/hooks/use-collaboration";
+import { useCollaboration } from "@/hooks/useCollaboration.hook";
 import { User } from "@/types/global";
 import { Users } from "lucide-react";
 

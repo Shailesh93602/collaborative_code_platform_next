@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { getProjects, createProject, fetchProjectData } from "@/lib/api";
+import { getProjects, createProject, fetchProjectData } from "@/lib/api.util";
 
 export function useProjects() {
   const queryClient = useQueryClient();

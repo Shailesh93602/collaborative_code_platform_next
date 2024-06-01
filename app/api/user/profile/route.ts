@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth.util";
+import prisma from "@/lib/prisma.util";
 import * as z from "zod";
 
 const profileSchema = z.object({

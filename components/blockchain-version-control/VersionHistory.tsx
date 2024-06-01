@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useWeb3 } from "@/hooks/use-web3";
+import { useWeb3 } from "@/hooks/userWeb3.hook";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Upload, MessageSquare } from "lucide-react";

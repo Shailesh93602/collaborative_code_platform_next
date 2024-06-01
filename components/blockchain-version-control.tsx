@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useWeb3 } from "@/hooks/use-web3";
+import { useWeb3 } from "@/hooks/userWeb3.hook";
 import {
   GitBranch,
   Save,
@@ -23,15 +23,15 @@ import {
   Lock,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast.hook";
 import { Pagination } from "@/components/ui/pagination";
 import { DiffViewer } from "@/components/diff-viewer";
 import { BranchManager } from "@/components/branch-manager";
 import { VersionGraph } from "@/components/version-graph";
-import { useLocalCache } from "@/hooks/use-local-cache";
+import { useLocalCache } from "@/hooks/useLocalCache.component";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { FileTree } from "@/components/file-tree";
+import { FileTree } from "@/components/FileTree.component";
 import { saveAs } from "file-saver";
 import { CustomFile } from "@/types/file";
 import { Label } from "@/components/ui/label";
@@ -39,7 +39,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   BlockchainErrorType,
   handleBlockchainError,
-} from "@/lib/blockchain-error-handler";
+} from "@/lib/blockchainErrorHandler.util";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { CodeReview } from "@/components/code-review";
 import { FileExplorer } from "./blockchain-version-control/FileExplorer";
@@ -50,7 +50,7 @@ import {
   importKey,
   encryptData,
   decryptData,
-} from "@/utils/encryption";
+} from "@/lib/encryption.util";
 
 interface FileTreeNode {
   name: string;

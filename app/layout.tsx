@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/contexts/theme-context";
+import { ThemeProvider } from "@/contexts/ThemeContext.context";
 import { CollaborationProvider } from "@/components/collaboration-provider";
 import { Web3Provider } from "@/components/web3-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { SessionProvider } from "next-auth/react";
-import { ProjectProvider } from "@/contexts/project-context";
+import { ProjectProvider } from "@/contexts/ProjectContext.context";
 import { QueryClient, QueryClientProvider } from "react-query";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import * as Sentry from "@sentry/nextjs";

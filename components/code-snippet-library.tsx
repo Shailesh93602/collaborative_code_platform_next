@@ -13,8 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
-import { LanguageSelector } from "@/components/language-selector";
+import { useToast } from "@/hooks/useToast.hook";
+import { LanguageSelector } from "@/components/LanguageSelector.component";
 
 interface CodeSnippet {
   id: string;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ErrorLog } from "@/lib/errorLogging";
+import { ErrorLog } from "@/lib/errorLogging.util";
 import * as Sentry from "@sentry/nextjs";
 
 export async function POST(request: Request) {

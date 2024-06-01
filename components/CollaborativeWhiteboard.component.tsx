@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import * as fabric from "fabric";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCollaboration } from "@/hooks/use-collaboration";
-import { useToast } from "@/hooks/use-toast";
+import { useCollaboration } from "@/hooks/useCollaboration.hook";
+import { useToast } from "@/hooks/useToast.hook";
 
 export function CollaborativeWhiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -8,10 +8,10 @@ import {
   ReactNode,
 } from "react";
 import { BrowserProvider, JsonRpcSigner, Contract } from "ethers";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast.hook";
 
 // Import the ABI and contract address
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from "@/lib/contract-config";
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from "@/lib/contractConfig.util";
 
 type Web3ContextType = {
   provider: BrowserProvider | null;

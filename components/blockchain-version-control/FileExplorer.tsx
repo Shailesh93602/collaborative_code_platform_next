@@ -1,4 +1,4 @@
-import { FileTree } from "@/components/file-tree";
+import { FileTree } from "@/components/FileTree.component";
 import { CustomFile } from "@/types/file";
 
 interface FileExplorerProps {

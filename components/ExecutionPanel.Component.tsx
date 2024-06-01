@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useDistributedExecution } from "@/hooks/use-distributed-execution";
+import { useDistributedExecution } from "@/hooks/useDistributedExecution.component";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, StopCircle } from "lucide-react";
 import {
@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { debounce } from "lodash";
-import { logError } from "@/lib/errorLogging";
-import { LanguageSelector } from "@/components/language-selector";
+import { logError } from "@/lib/errorLogging.util";
+import { LanguageSelector } from "@/components/LanguageSelector.component";
 
 const SUPPORTED_LANGUAGES = [
   { value: "javascript", label: "JavaScript" },
