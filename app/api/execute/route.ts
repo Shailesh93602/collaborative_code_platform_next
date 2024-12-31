@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
-import * as ivm from "isolated-vm";
-import { loadPyodide } from "pyodide";
-import { exec } from "child_process";
-import { promisify } from "util";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth.util";
+import { NextResponse } from 'next/server';
+import * as ivm from 'isolated-vm';
+import { loadPyodide } from 'pyodide';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth.util';
+import { ModuleKind } from 'typescript';
 
 const execAsync = promisify(exec);
 
@@ -14,12 +15,12 @@ const languageConfigs = {
       const isolate = new ivm.Isolate({ memoryLimit: 128 });
       const context = await isolate.createContext();
       const jail = context.global;
-      await jail.set("global", jail.derefInto());
+      await jail.set('global', jail.derefInto());
 
       const log = new ivm.Reference((...args: any[]) => {
         console.log(...args);
       });
-      await context.global.set("log", log);
+      await context.global.set('log', log);
 
       const result = await context.eval(`
         const console = { log: (...args) => log.applyIgnored(undefined, args, { arguments: { copy: true } }) };
@@ -30,10 +31,9 @@ const languageConfigs = {
   },
   typescript: {
     execute: async (code: string) => {
-      // For simplicity, we'll transpile TypeScript to JavaScript and then execute it
-      const { transpileModule } = await import("typescript");
+      const { transpileModule } = await import('typescript');
       const jsCode = transpileModule(code, {
-        compilerOptions: { module: "commonjs" },
+        compilerOptions: { module: ModuleKind.CommonJS },
       }).outputText;
       return languageConfigs.javascript.execute(jsCode);
     },
@@ -41,17 +41,16 @@ const languageConfigs = {
   python: {
     execute: async (code: string) => {
       const pyodide = await loadPyodide();
-      await pyodide.loadPackage("numpy");
+      await pyodide.loadPackage('numpy');
       return pyodide.runPython(code);
     },
   },
   java: {
     execute: async (code: string) => {
-      // For Java, we'll use a simple approach of writing to a file and compiling
-      const fs = await import("fs/promises");
-      const path = await import("path");
-      const tempDir = await fs.mkdtemp("java-");
-      const javaFile = path.join(tempDir, "Main.java");
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('java-');
+      const javaFile = path.join(tempDir, 'Main.java');
 
       await fs.writeFile(javaFile, code);
       await execAsync(`javac ${javaFile}`);
@@ -64,11 +63,11 @@ const languageConfigs = {
   },
   cpp: {
     execute: async (code: string) => {
-      const fs = await import("fs/promises");
-      const path = await import("path");
-      const tempDir = await fs.mkdtemp("cpp-");
-      const cppFile = path.join(tempDir, "temp.cpp");
-      const exeFile = path.join(tempDir, "temp.exe");
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('cpp-');
+      const cppFile = path.join(tempDir, 'temp.cpp');
+      const exeFile = path.join(tempDir, 'temp.exe');
 
       await fs.writeFile(cppFile, code);
       await execAsync(`g++ ${cppFile} -o ${exeFile}`);
@@ -79,20 +78,12 @@ const languageConfigs = {
       return stdout || stderr;
     },
   },
-  ruby: {
-    execute: async (code: string) => {
-      const { stdout, stderr } = await execAsync(
-        `ruby -e "${code.replace(/"/g, '\\"')}"`
-      );
-      return stdout || stderr;
-    },
-  },
   go: {
     execute: async (code: string) => {
-      const fs = await import("fs/promises");
-      const path = await import("path");
-      const tempDir = await fs.mkdtemp("go-");
-      const goFile = path.join(tempDir, "main.go");
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('go-');
+      const goFile = path.join(tempDir, 'main.go');
 
       await fs.writeFile(goFile, code);
       const { stdout, stderr } = await execAsync(`go run ${goFile}`);
@@ -102,16 +93,22 @@ const languageConfigs = {
       return stdout || stderr;
     },
   },
+  ruby: {
+    execute: async (code: string) => {
+      const { stdout, stderr } = await execAsync(`ruby -e "${code.replace(/"/g, '\\"')}"`);
+      return stdout || stderr;
+    },
+  },
   rust: {
     execute: async (code: string) => {
-      const fs = await import("fs/promises");
-      const path = await import("path");
-      const tempDir = await fs.mkdtemp("rust-");
-      const rustFile = path.join(tempDir, "main.rs");
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('rust-');
+      const rustFile = path.join(tempDir, 'main.rs');
 
       await fs.writeFile(rustFile, code);
-      await execAsync(`rustc ${rustFile} -o ${path.join(tempDir, "main")}`);
-      const { stdout, stderr } = await execAsync(path.join(tempDir, "main"));
+      await execAsync(`rustc ${rustFile} -o ${path.join(tempDir, 'main')}`);
+      const { stdout, stderr } = await execAsync(path.join(tempDir, 'main'));
 
       await fs.rm(tempDir, { recursive: true, force: true });
 
@@ -120,10 +117,10 @@ const languageConfigs = {
   },
   swift: {
     execute: async (code: string) => {
-      const fs = await import("fs/promises");
-      const path = await import("path");
-      const tempDir = await fs.mkdtemp("swift-");
-      const swiftFile = path.join(tempDir, "main.swift");
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('swift-');
+      const swiftFile = path.join(tempDir, 'main.swift');
 
       await fs.writeFile(swiftFile, code);
       const { stdout, stderr } = await execAsync(`swift ${swiftFile}`);
@@ -133,32 +130,107 @@ const languageConfigs = {
       return stdout || stderr;
     },
   },
+  csharp: {
+    execute: async (code: string) => {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('csharp-');
+      const csFile = path.join(tempDir, 'Program.cs');
+
+      await fs.writeFile(csFile, code);
+      await execAsync(`dotnet new console -o ${tempDir} --force`);
+      await fs.writeFile(csFile, code);
+      const { stdout, stderr } = await execAsync(`dotnet run --project ${tempDir}`);
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
+  php: {
+    execute: async (code: string) => {
+      const { stdout, stderr } = await execAsync(`php -r "${code.replace(/"/g, '\\"')}"`);
+      return stdout || stderr;
+    },
+  },
+  kotlin: {
+    execute: async (code: string) => {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('kotlin-');
+      const ktFile = path.join(tempDir, 'main.kt');
+
+      await fs.writeFile(ktFile, code);
+      await execAsync(`kotlinc ${ktFile} -include-runtime -d ${path.join(tempDir, 'main.jar')}`);
+      const { stdout, stderr } = await execAsync(`java -jar ${path.join(tempDir, 'main.jar')}`);
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
+  scala: {
+    execute: async (code: string) => {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('scala-');
+      const scalaFile = path.join(tempDir, 'Main.scala');
+
+      await fs.writeFile(scalaFile, code);
+      const { stdout, stderr } = await execAsync(`scala ${scalaFile}`);
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
+  dart: {
+    execute: async (code: string) => {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const tempDir = await fs.mkdtemp('dart-');
+      const dartFile = path.join(tempDir, 'main.dart');
+
+      await fs.writeFile(dartFile, code);
+      const { stdout, stderr } = await execAsync(`dart ${dartFile}`);
+
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      return stdout || stderr;
+    },
+  },
+  r: {
+    execute: async (code: string) => {
+      const { stdout, stderr } = await execAsync(`Rscript -e "${code.replace(/"/g, '\\"')}"`);
+      return stdout || stderr;
+    },
+  },
+  julia: {
+    execute: async (code: string) => {
+      const { stdout, stderr } = await execAsync(`julia -e "${code.replace(/"/g, '\\"')}"`);
+      return stdout || stderr;
+    },
+  },
 };
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { code, language } = await request.json();
 
   if (!languageConfigs[language]) {
-    return NextResponse.json(
-      { error: "Unsupported language" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Unsupported language' }, { status: 400 });
   }
 
   try {
     const result = await languageConfigs[language].execute(code);
     return NextResponse.json({ output: result });
   } catch (error) {
-    console.error("Execution error:", error);
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 500 }
-    );
+    console.error('Execution error:', error);
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

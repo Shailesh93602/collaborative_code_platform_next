@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth.util";
-import prisma from "@/lib/prisma.util";
+import { prisma } from "@/lib/prisma.util";
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         const start = i * CHUNK_SIZE;
         const end = Math.min((i + 1) * CHUNK_SIZE, code.length);
         const chunk = code.slice(start, end);
-        await prisma.file.create({
+        await (prisma as any).projectFile.create({
           data: {
             projectId,
             path: `chunk_${i}`,
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         });
       }
       // Save metadata
-      await prisma.file.create({
+      await (prisma as any).projectFile.create({
         data: {
           projectId,
           path: "metadata",
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
 
     // Save or update files
     for (const file of files) {
-      await prisma.file.upsert({
+      await (prisma as any).projectFile.upsert({
         where: {
           projectId_path: {
             projectId,

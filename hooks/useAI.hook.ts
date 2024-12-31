@@ -5,9 +5,9 @@ import { aiService } from "@/services/AIService";
 export function useAI() {
   const getAISuggestions = useCallback(
     async (
-      code: string,
-      language: string,
-      projectContext: string
+      code: string = "",
+      language: string = "cpp",
+      projectContext: string = ""
     ): Promise<AICodeSuggestion[]> => {
       try {
         return await aiService.getCodeSuggestions(
@@ -17,7 +17,7 @@ export function useAI() {
         );
       } catch (error) {
         console.error("Error getting AI suggestions:", error);
-        return [];
+        throw error;
       }
     },
     []
@@ -26,17 +26,16 @@ export function useAI() {
   const getAIResponse = useCallback(
     async (
       query: string,
-      code: string,
-      language: string,
-      projectContext: string
+      code: string = "",
+      language: string = "cpp",
+      projectContext: string = ""
     ): Promise<string> => {
       try {
-        const context = `The user is working with ${language} code in the following project context: ${projectContext}. Current code:
-${code}`;
+        const context = `The user is working with ${language} code in the following project context: ${projectContext}. Current code:\n${code}`;
         return await aiService.getCodeExplanation(code, language, context);
       } catch (error) {
         console.error("Error getting AI response:", error);
-        return "I'm sorry, I encountered an error while processing your request.";
+        throw error;
       }
     },
     []
@@ -56,7 +55,7 @@ ${code}`;
         );
       } catch (error) {
         console.error("Error getting code explanation:", error);
-        return "An error occurred while generating the explanation.";
+        throw error;
       }
     },
     []
@@ -76,7 +75,7 @@ ${code}`;
         );
       } catch (error) {
         console.error("Error getting optimization suggestions:", error);
-        return "An error occurred while generating optimization suggestions.";
+        throw error;
       }
     },
     []

@@ -1,0 +1,360 @@
+{
+    "api": {
+        "error": {
+            "databaseError": "डेटाबेस त्रुटि हुई",
+            "generalError": "एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
+            "invalidInput": "अमान्य इनपुट डेटा",
+            "notFound": "संसाधन नहीं मिला",
+            "unauthorized": "अनधिकृत पहुंच"
+        },
+        "success": {
+            "passwordReset": "पासवर्ड सफलतापूर्वक रीसेट किया गया",
+            "projectCreated": "प्रोजेक्ट सफलतापूर्वक बनाया गया",
+            "projectDeleted": "प्रोजेक्ट सफलतापूर्वक हटाया गया",
+            "projectUpdated": "प्रोजेक्ट सफलतापूर्वक अपडेट किया गया",
+            "userRegistered": "उपयोगकर्ता सफलतापूर्वक पंजीकृत"
+        }
+    },
+    "auth": {
+        "errors": {
+            "emailAlreadyInUse": "यह ईमेल पहले से उपयोग में है।",
+            "invalidCredentials": "अमान्य ईमेल या पासवर्ड।",
+            "passwordMismatch": "पासवर्ड मेल नहीं खाते।",
+            "unexpectedError": "एक अनपेक्षित त्रुटि हुई। कृपया पुनः प्रयास करें।",
+            "weakPassword": "पासवर्ड बहुत कमजोर है। इसमें कम से कम 8 अक्षर होने चाहिए और अक्षरों, संख्याओं और प्रतीकों का मिश्रण शामिल होना चाहिए।"
+        },
+        "login": {
+            "description": "वापस आने पर स्वागत है! कृपया अपने खाते में लॉग इन करें।",
+            "emailLabel": "ईमेल",
+            "passwordLabel": "पासवर्ड",
+            "registerLink": "खाता नहीं है? रजिस्टर करें",
+            "submitButton": "लॉग इन करें",
+            "title": "लॉग इन करें"
+        },
+        "register": {
+            "confirmPasswordLabel": "पासवर्ड की पुष्टि करें",
+            "description": "शुरू करने के लिए एक नया खाता बनाएं।",
+            "emailLabel": "ईमेल",
+            "loginLink": "पहले से ही खाता है? लॉग इन करें",
+            "nameLabel": "नाम",
+            "passwordLabel": "पासवर्ड",
+            "submitButton": "रजिस्टर करें",
+            "title": "रजिस्टर करें"
+        },
+        "resetPassword": {
+            "description": "पासवर्ड रीसेट लिंक प्राप्त करने के लिए अपना ईमेल दर्ज करें।",
+            "emailLabel": "ईमेल",
+            "submitButton": "रीसेट लिंक भेजें",
+            "successMessage": "पासवर्ड रीसेट ईमेल भेज दिया गया है। कृपया अपना इनबॉक्स जांचें।",
+            "title": "पासवर्ड रीसेट करें"
+        },
+        "verifyEmail": {
+            "description": "कृपया सत्यापन लिंक के लिए अपना ईमेल जांचें।",
+            "instructions": "एक बार जब आप अपना ईमेल सत्यापित कर लेते हैं, तो आप अपना खाता उपयोग करना शुरू कर सकते हैं।",
+            "title": "अपना ईमेल सत्यापित करें"
+        }
+    },
+    "blockchainVersionControl": {
+        "blockchainVersionControlEncrypted": "ब्लॉकचेन वर्जन कंट्रोल (एन्क्रिप्टेड)",
+        "commitMessagePlaceholder": "कमिट संदेश दर्ज करें",
+        "commitMessageRequired": "कमिट संदेश आवश्यक है",
+        "encryptedVersionLoadedAndDecrypted": "एन्क्रिप्टेड वर्जन लोड और डिक्रिप्ट किया गया",
+        "encryptedVersionSaved": "एन्क्रिप्टेड वर्जन सफलतापूर्वक सहेजा गया",
+        "enterCommitMessage": "कमिट संदेश दर्ज करें",
+        "error": "त्रुटि",
+        "failedToLoadAndDecryptVersion": "वर्जन लोड और डिक्रिप्ट करने में विफल",
+        "failedToSaveEncryptedVersion": "एन्क्रिप्टेड वर्जन सहेजने में विफल",
+        "loading": "लोड हो रहा है...",
+        "openVersionControl": "वर्जन कंट्रोल खोलें",
+        "queueEncryptedSave": "एन्क्रिप्टेड सेव कतार में डालें",
+        "success": "सफलता",
+        "versionHistory": "वर्जन इतिहास"
+    },
+    "codeExplainer": {
+        "codeExplanationAndDocumentation": "कोड व्याख्या और दस्तावेज़ीकरण",
+        "documentation": "दस्तावेज़ीकरण",
+        "errorGeneratingExplanationAndDocumentation": "व्याख्या और दस्तावेज़ीकरण उत्पन्न करने में त्रुटि:",
+        "explainCodePrompt": "इस कोड को संक्षेप में समझाएं",
+        "explanation": "व्याख्या",
+        "generateDocumentationPrompt": "इस कोड के लिए दस्तावेज़ीकरण उत्पन्न करें",
+        "generatingDocumentation": "दस्तावेज़ीकरण उत्पन्न हो रहा है...",
+        "generatingExplanation": "व्याख्या उत्पन्न हो रही है...",
+        "regenerate": "पुनः उत्पन्न करें"
+    },
+    "codeSnippetLibrary": {
+        "addNewSnippet": "नया स्निपेट जोड़ें",
+        "addNewSnippetDescription": "त्वरित पहुंच के लिए आमतौर पर उपयोग किए जाने वाले कोड पैटर्न सहेजें",
+        "error": "त्रुटि",
+        "fetchSnippetsError": "कोड स्निपेट प्राप्त करने में विफल। कृपया पुनः प्रयास करें।",
+        "pasteCodeHere": "अपना कोड यहां पेस्ट करें",
+        "saveSnippet": "स्निपेट सहेजें",
+        "saveSnippetError": "कोड स्निपेट सहेजने में विफल। कृपया पुनः प्रयास करें।",
+        "savedSnippets": "सहेजे गए स्निपेट",
+        "saving": "सहेज रहा है...",
+        "snippetSaved": "स्निपेट सहेजा गया",
+        "snippetSavedDescription": "आपका कोड स्निपेट सफलतापूर्वक सहेज लिया गया है।",
+        "snippetTitle": "स्निपेट शीर्षक",
+        "snippetUsed": "स्निपेट का उपयोग किया गया",
+        "snippetUsedDescription": "स्निपेट \"{{title}}\" एडिटर में डाला गया।",
+        "useSnippet": "स्निपेट का उपयोग करें"
+    },
+    "codeVisualizer": {
+        "codeVisualization": "कोड विज़ुअलाइज़ेशन"
+    },
+    "collaborativeWhiteboard": {
+        "addCode": "कोड जोड़ें",
+        "codeSnippetAdded": "कोड स्निपेट जोड़ा गया",
+        "codeSnippetAddedDescription": "कोड स्निपेट व्हाइटबोर्ड पर जोड़ दिया गया है।",
+        "collaborativeWhiteboard": "सहयोगी व्हाइटबोर्ड",
+        "enterCodeSnippet": "कोड स्निपेट दर्ज करें",
+        "eraser": "इरेज़र",
+        "pen": "पेन",
+        "text": "टेक्स्ट"
+    },
+    "common": {
+        "footer": {
+            "copyright": "© {{year}} सहयोगी कोड प्लेटफ़ॉर्म। सर्वाधिकार सुरक्षित।"
+        },
+        "general": {
+            "cancel": "रद्द करें",
+            "create": "बनाएं",
+            "delete": "हटाएं",
+            "edit": "संपादित करें",
+            "error": "त्रुटि",
+            "loading": "लोड हो रहा है...",
+            "save": "सहेजें",
+            "submit": "सबमिट करें",
+            "success": "सफलता"
+        },
+        "header": {
+            "logoutButton": "लॉग आउट",
+            "title": "सहयोगी कोड प्लेटफ़ॉर्म"
+        },
+        "navigation": {
+            "codeEditor": "कोड एडिटर",
+            "collaboration": "सहयोग",
+            "home": "होम",
+            "projects": "प्रोजेक्ट्स",
+            "settings": "सेटिंग्स"
+        }
+    },
+    "components": {
+        "codeEditor": {
+            "run": "चलाएँ",
+            "save": "सहेजें",
+            "share": "साझा करें"
+        },
+        "executionPanel": {
+            "clear": "कंसोल साफ़ करें",
+            "error": "त्रुटि",
+            "output": "आउटपुट"
+        },
+        "header": {
+            "logoutButton": "लॉग आउट",
+            "title": "सहयोगी कोड प्लेटफ़ॉर्म"
+        },
+        "languageSelector": {
+            "label": "भाषा चुनें"
+        },
+        "layoutCustomizer": {
+            "compact": "कॉम्पैक्ट लेआउट",
+            "default": "डिफ़ॉल्ट लेआउट",
+            "wide": "वाइड लेआउट"
+        },
+        "themeSwitcher": {
+            "dark": "डार्क मोड",
+            "light": "लाइट मोड",
+            "system": "सिस्टम प्राथमिकता"
+        },
+        "userProfile": {
+            "editProfile": "प्रोफ़ाइल संपादित करें",
+            "followers": "फ़ॉलोअर्स",
+            "following": "फ़ॉलोइंग"
+        }
+    },
+    "csrf": {
+        "invalidCSRFToken": "अमान्य CSRF टोकन"
+    },
+    "errors": {
+        "api": {
+            "databaseError": "एक डेटाबेस त्रुटि हुई। कृपया पुनः प्रयास करें।",
+            "invalidCSRFToken": "अमान्य या गायब CSRF टोकन।",
+            "rateLimitExceeded": "बहुत अधिक अनुरोध। कृपया बाद में पुनः प्रयास करें।"
+        },
+        "apiError": "API त्रुटि: {{message}}",
+        "databaseError": "एक डेटाबेस त्रुटि हुई। कृपया पुनः प्रयास करें।",
+        "defaultError": "एक त्रुटि हुई: {{message}}",
+        "general": {
+            "notFound": "अनुरोधित संसाधन नहीं मिला।",
+            "unauthorized": "आप इस कार्रवाई को करने के लिए अधिकृत नहीं हैं।",
+            "unexpected": "एक अनपेक्षित त्रुटि हुई। कृपया पुनः प्रयास करें।"
+        },
+        "notFound": "अनुरोधित संसाधन नहीं मिला।",
+        "unauthorized": "आप इस कार्रवाई को करने के लिए अधिकृत नहीं हैं।",
+        "unexpectedError": "एक अनपेक्षित त्रुटि हुई। कृपया पुनः प्रयास करें।",
+        "validation": {
+            "invalidEmail": "कृपया एक मान्य ईमेल पता दर्ज करें।",
+            "passwordMismatch": "पासवर्ड मेल नहीं खाते।",
+            "required": "यह फ़ील्ड आवश्यक है।",
+            "weakPassword": "पासवर्ड बहुत कमजोर है। इसमें कम से कम 8 अक्षर होने चाहिए और अक्षरों, संख्याओं और प्रतीकों का मिश्रण शामिल होना चाहिए।"
+        },
+        "validationError": "मान्यता त्रुटि: {{message}}"
+    },
+    "header": "सहयोगात्मक कोड प्लेटफ़ॉर्म",
+    "inputValidation": {
+        "emailRequired": "ईमेल आवश्यक है",
+        "invalidEmail": "अमान्य ईमेल",
+        "nameMinLength": "नाम कम से कम 2 अक्षर का होना चाहिए",
+        "nameRequired": "नाम आवश्यक है",
+        "passwordMinLength": "पासवर्ड कम से कम 8 अक्षर का होना चाहिए",
+        "passwordRequired": "पासवर्ड आवश्यक है",
+        "passwordRequirements": "पासवर्ड में कम से कम एक अपरकेस अक्षर, एक लोअरकेस अक्षर, एक संख्या और एक विशेष वर्ण होना चाहिए",
+        "validationError": "मान्यता त्रुटि: {{errors}}"
+    },
+    "layoutCustomizer": {
+        "compactLayout": "कॉम्पैक्ट लेआउट",
+        "defaultLayout": "डिफ़ॉल्ट लेआउट",
+        "wideLayout": "वाइड लेआउट"
+    },
+    "loading": "लोड हो रहा है...",
+    "multiLanguageSupport": {
+        "customExpressionLabel": "कस्टम अभिव्यक्ति",
+        "dataCountLabel": "डेटा संख्या",
+        "selectLanguage": "भाषा चुनिए",
+        "title": "बहु-भाषा समर्थन"
+    },
+    "pages": {
+        "home": {
+            "getStarted": "शुरू करें",
+            "welcome": "सहयोगी कोड प्लेटफ़ॉर्म में आपका स्वागत है"
+        },
+        "profile": {
+            "editButton": "प्रोफ़ाइल संपादित करें",
+            "saveButton": "परिवर्तन सहेजें",
+            "title": "उपयोगकर्ता प्रोफ़ाइल"
+        },
+        "projectList": {
+            "createNew": "नया प्रोजेक्ट बनाएँ",
+            "noProjects": "आपके पास अभी तक कोई प्रोजेक्ट नहीं है।",
+            "title": "आपके प्रोजेक्ट्स"
+        }
+    },
+    "peerList": {
+        "active": "सक्रिय",
+        "connectedPeers": "कनेक्टेड साथी",
+        "idle": "निष्क्रिय",
+        "offline": "ऑफ़लाइन"
+    },
+    "performanceProfiler": {
+        "areaChart": "क्षेत्र चार्ट",
+        "barChart": "बार चार्ट",
+        "cpuUsage": "CPU उपयोग (%)",
+        "errorExecutingCode": "कोड निष्पादित करने में त्रुटि:",
+        "executionTime": "निष्पादन समय (ms)",
+        "lineChart": "रेखा चार्ट",
+        "memoryUsage": "मेमोरी उपयोग (MB)",
+        "optimizationPrompt": "निम्नलिखित प्रदर्शन डेटा के आधार पर, इस कोड के लिए अनुकूलन सुझाएं:\n\n{{performanceData}}\n\nकोड:\n{{code}}",
+        "optimizationSuggestions": "अनुकूलन सुझाव",
+        "performanceProfiler": "प्रदर्शन प्रोफाइलर",
+        "runProfilerToGenerateSuggestions": "अनुकूलन सुझाव उत्पन्न करने के लिए प्रोफाइलर चलाएं।",
+        "selectChartType": "चार्ट प्रकार चुनें",
+        "selectMetric": "मेट्रिक चुनें",
+        "startProfiling": "प्रोफाइलिंग शुरू करें",
+        "stopProfiling": "प्रोफाइलिंग रोकें"
+    },
+    "pluginManager": {
+        "errorLoadingPlugin": "प्लगइन लोड करने में त्रुटि",
+        "errorUnloadingPlugin": "प्लगइन अनलोड करने में त्रुटि",
+        "loading": "लोड हो रहा है...",
+        "pluginLoaded": "प्लगइन लोड हो गया",
+        "pluginLoadedDescription": "प्लगइन सफलतापूर्वक लोड हो गया है।",
+        "pluginUnloaded": "प्लगइन अनलोड हो गया",
+        "pluginUnloadedDescription": "प्लगइन सफलतापूर्वक अनलोड हो गया है।",
+        "plugins": "प्लगइन्स",
+        "unknownError": "एक अज्ञात त्रुटि हुई",
+        "unload": "अनलोड करें",
+        "version": "संस्करण"
+    },
+    "projectImport": {
+        "enterGitHubUrl": "आयात करने के लिए GitHub रिपॉजिटरी का URL दर्ज करें",
+        "githubUrlPlaceholder": "https://github.com/username/repo",
+        "importFailed": "आयात विफल",
+        "importFailedDescription": "आपका प्रोजेक्ट आयात करने में एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
+        "importGitHubProject": "GitHub प्रोजेक्ट आयात करें",
+        "importProject": "प्रोजेक्ट आयात करें",
+        "importing": "आयात हो रहा है...",
+        "projectImported": "प्रोजेक्ट आयात किया गया",
+        "projectImportedDescription": "{{name}} सफलतापूर्वक आयात किया गया"
+    },
+    "rateLimit": {
+        "tooManyRequests": "इस IP से बहुत अधिक अनुरोध, कृपया बाद में पुनः प्रयास करें।"
+    },
+    "signIn": "साइन इन",
+    "signOut": "साइन आउट",
+    "sortableList": {
+        "english": "अंग्रेज़ी",
+        "gujarati": "गुजराती",
+        "hindi": "हिन्दी",
+        "selectLanguage": "भाषा चुनें",
+        "sortAscending": "आरोही क्रम में",
+        "sortDescending": "अवरोही क्रम में"
+    },
+    "themeSwitcher": {
+        "darkTheme": "डार्क थीम",
+        "lightTheme": "लाइट थीम",
+        "systemTheme": "सिस्टम थीम"
+    },
+    "timelineDebugger": {
+        "codeAtStep": "स्टेप {{step}} पर कोड",
+        "title": "टाइम-ट्रैवल डीबगर",
+        "variables": "वेरिएबल्स"
+    },
+    "userOnboarding": {
+        "codeEditor": {
+            "description": "अपना कोड लिखने और संपादित करने के लिए हमारे शक्तिशाली कोड एडिटर का उपयोग करें। यह कई भाषाओं का समर्थन करता है और सिंटैक्स हाइलाइटिंग प्रदान करता है।",
+            "title": "कोड एडिटर"
+        },
+        "collaboration": {
+            "description": "अपनी टीम के साथ वास्तविक समय में काम करें। दूसरों के कर्सर और परिवर्तनों को होते हुए देखें।",
+            "title": "सहयोग सुविधाएँ"
+        },
+        "executionPanel": {
+            "description": "अपने कोड को सीधे ब्राउज़र में चलाएं और वास्तविक समय में आउटपुट देखें।",
+            "title": "निष्पादन पैनल"
+        },
+        "finish": "समाप्त करें",
+        "next": "अगला",
+        "skipTutorial": "ट्यूटोरियल छोड़ें",
+        "visualizationStudio": {
+            "description": "इंटरैक्टिव चार्ट और ग्राफ़ के साथ अपने डेटा को विज़ुअलाइज़ करें।",
+            "title": "विज़ुअलाइज़ेशन स्टूडियो"
+        },
+        "welcome": {
+            "description": "यह प्लेटफ़ॉर्म आपको वास्तविक समय में कोड लिखने, निष्पादित करने और सहयोग करने की अनुमति देता है।",
+            "title": "सहयोगी कोड प्लेटफ़ॉर्म में आपका स्वागत है"
+        }
+    },
+    "userProfile": {
+        "logOut": "लॉग आउट",
+        "skills": "कौशल",
+        "website": "वेबसाइट"
+    },
+    "visualizationStudio": {
+        "barChart": "बार चार्ट",
+        "chartTypeLabel": "चार्ट प्रकार",
+        "customExpressionError": "कस्टम एक्सप्रेशन में त्रुटि:",
+        "customExpressionLabel": "कस्टम एक्सप्रेशन",
+        "customExpressionPlaceholder": "कस्टम एक्सप्रेशन (उदाहरण: {...item, value3: item.value1 * 2})",
+        "dataCountLabel": "डेटा बिंदुओं की संख्या",
+        "dataCountPlaceholder": "डेटा बिंदुओं की संख्या",
+        "invalidCustomExpression": "अमान्य कस्टम एक्सप्रेशन। कृपया अपना इनपुट जांचें।",
+        "lineChart": "रेखा चार्ट",
+        "noChartTypeSelected": "कोई चार्ट प्रकार चयनित नहीं",
+        "scatterPlot": "बिखरा हुआ प्लॉट",
+        "selectChartType": "चार्ट प्रकार चुनें",
+        "title": "इंटरैक्टिव विज़ुअलाइज़ेशन स्टूडियो",
+        "value1": "मान 1",
+        "value2": "मान 2",
+        "values": "मान"
+    }
+}

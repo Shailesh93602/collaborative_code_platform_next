@@ -3,23 +3,29 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  password      String
-  name          String?
-  bio           String?
-  projects      Project[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  CodeSnippet   CodeSnippet[]
-  profile       UserProfile?
-  followedBy    Follows[]      @relation("following")
-  following     Follows[]      @relation("follower")
+  id                String         @id @default(cuid())
+  email             String         @unique
+  password          String
+  name              String?
+  bio               String?
+  projects          Project[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  CodeSnippet       CodeSnippet[]
+  profile           UserProfile?
+  followedBy        Follows[]      @relation("following")
+  following         Follows[]      @relation("follower")
+  emailVerified     Boolean        @default(false)
+  verificationToken String?
+  loginAttempts LoginAttempt[]
+  twoFactorSecret    String?
+  twoFactorEnabled   Boolean  @default(false)
 }
 
 model UserProfile {
@@ -44,13 +50,14 @@ model Follows {
 }
 
 model Project {
-  id        String   @id @default(cuid())
-  name      String
-  code      String   @db.Text
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  code        String   @db.Text
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model CodeSnippet {
@@ -62,5 +69,20 @@ model CodeSnippet {
   updatedAt DateTime @updatedAt
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  success   Boolean
+}
+
+model EncryptionKey {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
 

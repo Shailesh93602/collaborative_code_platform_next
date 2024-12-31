@@ -1,55 +1,56 @@
-import { NextResponse } from "next/server";
-import { compare } from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
-import * as yup from "yup";
-import { sign } from "jsonwebtoken";
+import { NextRequest, NextResponse } from 'next/server';
+import * as yup from 'yup';
+import { sign } from 'jsonwebtoken';
+import { validateAndSanitizeInput, emailSchema, passwordSchema } from '@/lib/inputValidation';
+import { handleApiError } from '@/lib/errorHandling';
+import { getDictionary } from '@/get-dictionaries';
+import { createClient } from '@/services/supabase/server';
 
-const prisma = new PrismaClient();
-
-const schema = yup.object().shape({
-  email: yup.string().email().required(),
-  password: yup.string().required(),
+const loginSchema = yup.object().shape({
+  email: emailSchema,
+  password: passwordSchema,
 });
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest, { params }) {
+  const { lang } = await params;
   try {
+    const supabase = await createClient();
+    const dictionary = await getDictionary(lang);
     const body = await request.json();
-    await schema.validate(body);
+    const validatedData = await validateAndSanitizeInput(
+      loginSchema,
+      body,
+      dictionary?.inputValidation
+    );
 
-    const { email, password } = body;
+    const { email, password } = validatedData;
 
-    const user = await prisma.user.findUnique({
-      where: { email },
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
 
-    if (!user) {
+    if (error || !data.user) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        {
+          error: {
+            code: 'InvalidCredentials',
+            message: dictionary?.auth.errors?.invalidCredentials,
+          },
+        },
         { status: 400 }
       );
     }
 
-    const isPasswordValid = await compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 400 }
-      );
-    }
-
-    const token = sign({ userId: user.id }, process.env.JWT_SECRET!, {
-      expiresIn: "1d",
+    const token = sign({ userId: data.user.id }, process.env.JWT_SECRET!, {
+      expiresIn: '1d',
     });
 
     return NextResponse.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name },
+      user: { id: data.user.id, email: data.user.email },
     });
   } catch (error) {
-    if (error instanceof yup.ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
+    return handleApiError(error, 'An error occurred during login', lang);
   }
 }

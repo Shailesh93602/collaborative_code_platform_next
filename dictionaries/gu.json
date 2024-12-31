@@ -1,0 +1,360 @@
+{
+    "api": {
+        "error": {
+            "databaseError": "ડેટાબેસ ભૂલ આવી",
+            "generalError": "એક ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+            "invalidInput": "અમાન્ય ઇનપુટ ડેટા",
+            "notFound": "સંસાધન મળ્યું નથી",
+            "unauthorized": "અનધિકૃત ઍક્સેસ"
+        },
+        "success": {
+            "passwordReset": "પાસવર્ડ સફળતાપૂર્વક રીસેટ કરવામાં આવ્યો",
+            "projectCreated": "પ્રોજેક્ટ સફળતાપૂર્વક બનાવવામાં આવ્યો",
+            "projectDeleted": "પ્રોજેક્ટ સફળતાપૂર્વક કાઢી નાખવામાં આવ્યો",
+            "projectUpdated": "પ્રોજેક્ટ સફળતાપૂર્વક અપડેટ કરવામાં આવ્યો",
+            "userRegistered": "વપરાશકર્તા સફળતાપૂર્વક નોંધાયેલ"
+        }
+    },
+    "auth": {
+        "errors": {
+            "emailAlreadyInUse": "આ ઇમેઇલ પહેલેથી ઉપયોગમાં છે.",
+            "invalidCredentials": "અમાન્ય ઇમેઇલ અથવા પાસવર્ડ.",
+            "passwordMismatch": "પાસવર્ડ મેળ ખાતા નથી.",
+            "unexpectedError": "અનપેક્ષિત ભૂલ થઈ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+            "weakPassword": "પાસવર્ડ ખૂબ નબળો છે. તે ઓછામાં ઓછા 8 અક્ષરો લાંબો હોવો જોઈએ અને અક્ષરો, સંખ્યાઓ અને પ્રતીકોનું મિશ્રણ હોવું જોઈએ."
+        },
+        "login": {
+            "description": "પાછા આવ્યા છો! કૃપા કરીને તમારા એકાઉન્ટમાં લૉગિન કરો.",
+            "emailLabel": "ઇમેઇલ",
+            "passwordLabel": "પાસવર્ડ",
+            "registerLink": "એકાઉન્ટ નથી? રજિસ્ટર કરો",
+            "submitButton": "લૉગિન કરો",
+            "title": "લૉગિન કરો"
+        },
+        "register": {
+            "confirmPasswordLabel": "પાસવર્ડની પુષ્ટિ કરો",
+            "description": "શરૂ કરવા માટે નવું એકાઉન્ટ બનાવો.",
+            "emailLabel": "ઇમેઇલ",
+            "loginLink": "પહેલેથી જ એકાઉન્ટ છે? લૉગિન કરો",
+            "nameLabel": "નામ",
+            "passwordLabel": "પાસવર્ડ",
+            "submitButton": "રજિસ્ટર કરો",
+            "title": "રજિસ્ટર કરો"
+        },
+        "resetPassword": {
+            "description": "પાસવર્ડ રીસેટ લિંક મેળવવા માટે તમારો ઇમેઇલ દાખલ કરો.",
+            "emailLabel": "ઇમેઇલ",
+            "submitButton": "રીસેટ લિંક મોકલો",
+            "successMessage": "પાસવર્ડ રીસેટ ઇમેઇલ મોકલવામાં આવ્યો છે. કૃપા કરીને તમારું ઇનબૉક્સ તપાસો.",
+            "title": "પાસવર્ડ રીસેટ કરો"
+        },
+        "verifyEmail": {
+            "description": "કૃપા કરીને ચકાસણી લિંક માટે તમારો ઇમેઇલ તપાસો.",
+            "instructions": "એકવાર તમે તમારો ઇમેઇલ ચકાસ્યા પછી, તમે તમારું એકાઉન્ટ વાપરવાનું શરૂ કરી શકો છો.",
+            "title": "તમારો ઇમેઇલ ચકાસો"
+        }
+    },
+    "blockchainVersionControl": {
+        "blockchainVersionControlEncrypted": "બ્લોકચેઇન વર્ઝન કંટ્રોલ (એન્ક્રિપ્ટેડ)",
+        "commitMessagePlaceholder": "કમિટ સંદેશ દાખલ કરો",
+        "commitMessageRequired": "કમિટ સંદેશ આવશ્યક છે",
+        "encryptedVersionLoadedAndDecrypted": "એન્ક્રિપ્ટેડ વર્ઝન લોડ અને ડિક્રિપ્ટ થયું",
+        "encryptedVersionSaved": "એન્ક્રિપ્ટેડ વર્ઝન સફળતાપૂર્વક સાચવવામાં આવ્યું",
+        "enterCommitMessage": "કમિટ સંદેશ દાખલ કરો",
+        "error": "ભૂલ",
+        "failedToLoadAndDecryptVersion": "વર્ઝન લોડ અને ડિક્રિપ્ટ કરવામાં નિષ્ફળ",
+        "failedToSaveEncryptedVersion": "એન્ક્રિપ્ટેડ વર્ઝન સાચવવામાં નિષ્ફળ",
+        "loading": "લોડ થઈ રહ્યું છે...",
+        "openVersionControl": "વર્ઝન કંટ્રોલ ખોલો",
+        "queueEncryptedSave": "એન્ક્રિપ્ટેડ સેવ કતારમાં મૂકો",
+        "success": "સફળતા",
+        "versionHistory": "વર્ઝન ઇતિહાસ"
+    },
+    "codeExplainer": {
+        "codeExplanationAndDocumentation": "કોડ સમજાવટ અને દસ્તાવેજીકરણ",
+        "documentation": "દસ્તાવેજીકરણ",
+        "errorGeneratingExplanationAndDocumentation": "સમજાવટ અને દસ્તાવેજીકરણ તૈયાર કરવામાં ભૂલ:",
+        "explainCodePrompt": "આ કોડને સંક્ષેપમાં સમજાવો",
+        "explanation": "સમજાવટ",
+        "generateDocumentationPrompt": "આ કોડ માટે દસ્તાવેજીકરણ તૈયાર કરો",
+        "generatingDocumentation": "દસ્તાવેજીકરણ તૈયાર થઈ રહ્યું છે...",
+        "generatingExplanation": "સમજાવટ તૈયાર થઈ રહી છે...",
+        "regenerate": "ફરીથી તૈયાર કરો"
+    },
+    "codeSnippetLibrary": {
+        "addNewSnippet": "નવું સ્નિપેટ ઉમેરો",
+        "addNewSnippetDescription": "ઝડપી ઍક્સેસ માટે સામાન્ય રીતે વપરાતા કોડ પેટર્ન સાચવો",
+        "error": "ભૂલ",
+        "fetchSnippetsError": "કોડ સ્નિપેટ્સ મેળવવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+        "pasteCodeHere": "તમારો કોડ અહીં પેસ્ટ કરો",
+        "saveSnippet": "સ્નિપેટ સાચવો",
+        "saveSnippetError": "કોડ સ્નિપેટ સાચવવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+        "savedSnippets": "સાચવેલા સ્નિપેટ્સ",
+        "saving": "સાચવી રહ્યું છે...",
+        "snippetSaved": "સ્નિપેટ સાચવ્યું",
+        "snippetSavedDescription": "તમારું કોડ સ્નિપેટ સફળતાપૂર્વક સાચવવામાં આવ્યું છે.",
+        "snippetTitle": "સ્નિપેટ શીર્ષક",
+        "snippetUsed": "સ્નિપેટ વપરાયું",
+        "snippetUsedDescription": "સ્નિપેટ \"{{title}}\" એડિટરમાં દાખલ કર્યું.",
+        "useSnippet": "સ્નિપેટ વાપરો"
+    },
+    "codeVisualizer": {
+        "codeVisualization": "કોડ વિઝ્યુઅલાઇઝેશન"
+    },
+    "collaborativeWhiteboard": {
+        "addCode": "કોડ ઉમેરો",
+        "codeSnippetAdded": "કોડ સ્નિપેટ ઉમેરાયું",
+        "codeSnippetAddedDescription": "કોડ સ્નિપેટ વ્હાઇટબોર્ડ પર ઉમેરવામાં આવ્યું છે.",
+        "collaborativeWhiteboard": "સહયોગી વ્હાઇટબોર્ડ",
+        "enterCodeSnippet": "કોડ સ્નિપેટ દાખલ કરો",
+        "eraser": "ઇરેઝર",
+        "pen": "પેન",
+        "text": "ટેક્સ્ટ"
+    },
+    "common": {
+        "footer": {
+            "copyright": "© {{year}} સહયોગી કોડ પ્લેટફોર્મ. બધા અધિકારો સુરક્ષિત."
+        },
+        "general": {
+            "cancel": "રદ કરો",
+            "create": "બનાવો",
+            "delete": "કાઢી નાખો",
+            "edit": "સંપાદિત કરો",
+            "error": "ભૂલ",
+            "loading": "લોડ થઈ રહ્યું છે...",
+            "save": "સાચવો",
+            "submit": "સબમિટ કરો",
+            "success": "સફળતા"
+        },
+        "header": {
+            "logoutButton": "લૉગ આઉટ",
+            "title": "સહયોગી કોડ પ્લેટફોર્મ"
+        },
+        "navigation": {
+            "codeEditor": "કોડ એડિટર",
+            "collaboration": "સહયોગ",
+            "home": "હોમ",
+            "projects": "પ્રોજેક્ટ્સ",
+            "settings": "સેટિંગ્સ"
+        }
+    },
+    "components": {
+        "codeEditor": {
+            "run": "ચલાવો",
+            "save": "સાચવો",
+            "share": "શેર કરો"
+        },
+        "executionPanel": {
+            "clear": "કન્સોલ સાફ કરો",
+            "error": "ભૂલ",
+            "output": "આઉટપુટ"
+        },
+        "header": {
+            "logoutButton": "લૉગ આઉટ",
+            "title": "સહયોગી કોડ પ્લેટફોર્મ"
+        },
+        "languageSelector": {
+            "label": "ભાષા પસંદ કરો"
+        },
+        "layoutCustomizer": {
+            "compact": "કોમ્પેક્ટ લેઆઉટ",
+            "default": "ડિફોલ્ટ લેઆઉટ",
+            "wide": "વાઇડ લેઆઉટ"
+        },
+        "themeSwitcher": {
+            "dark": "ડાર્ક મોડ",
+            "light": "લાઇટ મોડ",
+            "system": "સિસ્ટમ પસંદગી"
+        },
+        "userProfile": {
+            "editProfile": "પ્રોફાઇલ સંપાદિત કરો",
+            "followers": "અનુયાયીઓ",
+            "following": "અનુસરણ કરી રહ્યા છે"
+        }
+    },
+    "csrf": {
+        "invalidCSRFToken": "અમાન્ય CSRF ટોકન"
+    },
+    "errors": {
+        "api": {
+            "databaseError": "એક ડેટાબેસ ભૂલ થઈ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+            "invalidCSRFToken": "અમાન્ય અથવા ગુમ CSRF ટોકન.",
+            "rateLimitExceeded": "ઘણા બધા અનુરોધો. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો."
+        },
+        "apiError": "API ભૂલ: {{message}}",
+        "databaseError": "એક ડેટાબેસ ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+        "defaultError": "એક ભૂલ આવી: {{message}}",
+        "general": {
+            "notFound": "વિનંતી કરેલ સંસાધન મળ્યું નથી.",
+            "unauthorized": "તમને આ ક્રિયા કરવાની અધિકૃતિ નથી.",
+            "unexpected": "એક અનપેક્ષિત ભૂલ થઈ. કૃપા કરીને ફરી પ્રયાસ કરો."
+        },
+        "notFound": "વિનંતી કરેલ સંસાધન મળ્યું નથી.",
+        "unauthorized": "તમને આ ક્રિયા કરવાની અધિકૃતિ નથી.",
+        "unexpectedError": "એક અનપેક્ષિત ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+        "validation": {
+            "invalidEmail": "કૃપા કરીને માન્ય ઇમેઇલ સરનામું દાખલ કરો.",
+            "passwordMismatch": "પાસવર્ડ મેળ ખાતા નથી.",
+            "required": "આ ફીલ્ડ આવશ્યક છે.",
+            "weakPassword": "પાસવર્ડ ખૂબ નબળો છે. તે ઓછામાં ઓછા 8 અક્ષરો લાંબો હોવો જોઈએ અને અક્ષરો, સંખ્યાઓ અને પ્રતીકોનું મિશ્રણ હોવું જોઈએ."
+        },
+        "validationError": "માન્યતા ભૂલ: {{message}}"
+    },
+    "header": "સહયોગી કોડ પ્લેટફોર્મ",
+    "inputValidation": {
+        "emailRequired": "ઇમેઇલ આવશ્યક છે",
+        "invalidEmail": "અમાન્ય ઇમેઇલ",
+        "nameMinLength": "નામ ઓછામાં ઓછું 2 અક્ષરનું હોવું જોઈએ",
+        "nameRequired": "નામ આવશ્યક છે",
+        "passwordMinLength": "પાસવર્ડ ઓછામાં ઓછો 8 અક્ષરનો હોવો જોઈએ",
+        "passwordRequired": "પાસવર્ડ આવશ્યક છે",
+        "passwordRequirements": "પાસવર્ડમાં ઓછામાં ઓછો એક અપરકેસ અક્ષર, એક લોઅરકેસ અક્ષર, એક સંખ્યા અને એક વિશેષ અક્ષર હોવો જોઈએ",
+        "validationError": "માન્યતા ભૂલ: {{errors}}"
+    },
+    "layoutCustomizer": {
+        "compactLayout": "કોમ્પેક્ટ લેઆઉટ",
+        "defaultLayout": "ડિફોલ્ટ લેઆઉટ",
+        "wideLayout": "વાઇડ લેઆઉટ"
+    },
+    "loading": "લોડ થઈ રહ્યું છે...",
+    "multiLanguageSupport": {
+        "customExpressionLabel": "કસ્ટમ અભિવ્યક્તિ",
+        "dataCountLabel": "ડેટા ગણતરી",
+        "selectLanguage": "ભાષા પસંદ કરો",
+        "title": "બહુ-ભાષા સપોર્ટ"
+    },
+    "pages": {
+        "home": {
+            "getStarted": "શરૂ કરો",
+            "welcome": "સહયોગી કોડ પ્લેટફોર્મમાં આપનું સ્વાગત છે"
+        },
+        "profile": {
+            "editButton": "પ્રોફાઇલ સંપાદિત કરો",
+            "saveButton": "ફેરફારો સાચવો",
+            "title": "વપરાશકર્તા પ્રોફાઇલ"
+        },
+        "projectList": {
+            "createNew": "નવો પ્રોજેક્ટ બનાવો",
+            "noProjects": "તમારી પાસે હજુ કોઈ પ્રોજેક્ટ નથી.",
+            "title": "તમારા પ્રોજેક્ટ્સ"
+        }
+    },
+    "peerList": {
+        "active": "સક્રિય",
+        "connectedPeers": "જોડાયેલા પીઅર્સ",
+        "idle": "નિષ્ક્રિય",
+        "offline": "ઑફલાઇન"
+    },
+    "performanceProfiler": {
+        "areaChart": "એરિયા ચાર્ટ",
+        "barChart": "બાર ચાર્ટ",
+        "cpuUsage": "CPU વપરાશ (%)",
+        "errorExecutingCode": "કોડ એક્ઝિક્યુટ કરવામાં ભૂલ:",
+        "executionTime": "એક્ઝિક્યુશન સમય (ms)",
+        "lineChart": "લાઇન ચાર્ટ",
+        "memoryUsage": "મેમરી વપરાશ (MB)",
+        "optimizationPrompt": "નીચેના પરફોર્મન્સ ડેટાના આધારે, આ કોડ માટે ઓપ્ટિમાઇઝેશન સૂચવો:\n\n{{performanceData}}\n\nકોડ:\n{{code}}",
+        "optimizationSuggestions": "ઓપ્ટિમાઇઝેશન સૂચનો",
+        "performanceProfiler": "પરફોર્મન્સ પ્રોફાઇલર",
+        "runProfilerToGenerateSuggestions": "ઓપ્ટિમાઇઝેશન સૂચનો જનરેટ કરવા માટે પ્રોફાઇલર ચલાવો.",
+        "selectChartType": "ચાર્ટ પ્રકાર પસંદ કરો",
+        "selectMetric": "મેટ્રિક પસંદ કરો",
+        "startProfiling": "પ્રોફાઇલિંગ શરૂ કરો",
+        "stopProfiling": "પ્રોફાઇલિંગ બંધ કરો"
+    },
+    "pluginManager": {
+        "errorLoadingPlugin": "પ્લગઇન લોડ કરવામાં ભૂલ",
+        "errorUnloadingPlugin": "પ્લગઇન અનલોડ કરવામાં ભૂલ",
+        "loading": "લોડ થઈ રહ્યું છે...",
+        "pluginLoaded": "પ્લગઇન લોડ થયું",
+        "pluginLoadedDescription": "પ્લગઇન સફળતાપૂર્વક લોડ થયું છે.",
+        "pluginUnloaded": "પ્લગઇન અનલોડ થયું",
+        "pluginUnloadedDescription": "પ્લગઇન સફળતાપૂર્વક અનલોડ થયું છે.",
+        "plugins": "પ્લગઇન્સ",
+        "unknownError": "અજ્ઞાત ભૂલ થઈ",
+        "unload": "અનલોડ કરો",
+        "version": "વર્ઝન"
+    },
+    "projectImport": {
+        "enterGitHubUrl": "આયાત કરવા માટે GitHub રિપોઝીટરીનું URL દાખલ કરો",
+        "githubUrlPlaceholder": "https://github.com/username/repo",
+        "importFailed": "આયાત નિષ્ફળ",
+        "importFailedDescription": "તમારો પ્રોજેક્ટ આયાત કરવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+        "importGitHubProject": "GitHub પ્રોજેક્ટ આયાત કરો",
+        "importProject": "પ્રોજેક્ટ આયાત કરો",
+        "importing": "આયાત કરી રહ્યું છે...",
+        "projectImported": "પ્રોજેક્ટ આયાત કર્યો",
+        "projectImportedDescription": "{{name}} સફળતાપૂર્વક આયાત કર્યું"
+    },
+    "rateLimit": {
+        "tooManyRequests": "આ IP થી ઘણા બધા અનુરોધો, કૃપા કરીને પછીથી ફરી પ્રયાસ કરો."
+    },
+    "signIn": "સાઇન ઇન",
+    "signOut": "લૉગ આઉટ",
+    "sortableList": {
+        "english": "અંગ્રેજી",
+        "gujarati": "ગુજરાતી",
+        "hindi": "હિન્દી",
+        "selectLanguage": "ભાષા પસંદ કરો",
+        "sortAscending": "ચડતા ક્રમમાં ગોઠવો",
+        "sortDescending": "ઉતરતા ક્રમમાં ગોઠવો"
+    },
+    "themeSwitcher": {
+        "darkTheme": "ડાર્ક થીમ",
+        "lightTheme": "લાઇટ થીમ",
+        "systemTheme": "સિસ્ટમ થીમ"
+    },
+    "timelineDebugger": {
+        "codeAtStep": "સ્ટેપ {{step}} પર કોડ",
+        "title": "ટાઇમ-ટ્રાવેલ ડીબગર",
+        "variables": "વેરિએબલ્સ"
+    },
+    "userOnboarding": {
+        "codeEditor": {
+            "description": "તમારો કોડ લખવા અને સંપાદિત કરવા માટે અમારા શક્તિશાળી કોડ એડિટરનો ઉપયોગ કરો. તે અનેક ભાષાઓને સપોર્ટ કરે છે અને સિન્ટેક્સ હાઇલાઇટિંગ પ્રદાન કરે છે.",
+            "title": "કોડ એડિટર"
+        },
+        "collaboration": {
+            "description": "તમારી ટીમ સાથે રીયલ-ટાઈમમાં કામ કરો. અન્યના કર્સર અને ફેરફારો થતા જુઓ.",
+            "title": "સહયોગ સુવિધાઓ"
+        },
+        "executionPanel": {
+            "description": "તમારો કોડ સીધો બ્રાઉઝરમાં ચલાવો અને રીયલ-ટાઈમમાં આઉટપુટ જુઓ.",
+            "title": "એક્ઝિક્યુશન પેનલ"
+        },
+        "finish": "સમાપ્ત કરો",
+        "next": "આગળ",
+        "skipTutorial": "ટ્યુટોરિયલ છોડો",
+        "visualizationStudio": {
+            "description": "ઇન્ટરેક્ટિવ ચાર્ટ્સ અને ગ્રાફ્સ સાથે તમારા ડેટાને વિઝ્યુઅલાઇઝ કરો.",
+            "title": "વિઝ્યુઅલાઇઝેશન સ્ટુડિયો"
+        },
+        "welcome": {
+            "description": "આ પ્લેટફોર્મ તમને રીયલ-ટાઈમમાં કોડ લખવા, એક્ઝિક્યુટ કરવા અને સહયોગ કરવાની મંજૂરી આપે છે.",
+            "title": "સહયોગી કોડ પ્લેટફોર્મમાં આપનું સ્વાગત છે"
+        }
+    },
+    "userProfile": {
+        "logOut": "લૉગ આઉટ",
+        "skills": "કૌશલ્યો",
+        "website": "વેબસાઇટ"
+    },
+    "visualizationStudio": {
+        "barChart": "બાર ચાર્ટ",
+        "chartTypeLabel": "ચાર્ટ પ્રકાર",
+        "customExpressionError": "કસ્ટમ એક્સપ્રેશનમાં ભૂલ:",
+        "customExpressionLabel": "કસ્ટમ એક્સપ્રેશન",
+        "customExpressionPlaceholder": "કસ્ટમ એક્સપ્રેશન (ઉદાહરણ: {...item, value3: item.value1 * 2})",
+        "dataCountLabel": "ડેટા પોઇન્ટ્સની સંખ્યા",
+        "dataCountPlaceholder": "ડેટા પોઇન્ટ્સની સંખ્યા",
+        "invalidCustomExpression": "અમાન્ય કસ્ટમ એક્સપ્રેશન. કૃપા કરીને તમારી ઇનપુટ તપાસો.",
+        "lineChart": "લાઇન ચાર્ટ",
+        "noChartTypeSelected": "કોઈ ચાર્ટ પ્રકાર પસંદ કરેલ નથી",
+        "scatterPlot": "સ્કેટર પ્લોટ",
+        "selectChartType": "ચાર્ટ પ્રકાર પસંદ કરો",
+        "title": "ઇન્ટરેક્ટિવ વિઝ્યુલાઇઝેશન સ્ટુડિયો",
+        "value1": "મૂલ્ય 1",
+        "value2": "મૂલ્ય 2",
+        "values": "મૂલ્યો"
+    }
+}

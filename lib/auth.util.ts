@@ -1,57 +1,41 @@
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
-import { compare } from "bcryptjs";
-import DiscordProvider from "next-auth/providers/discord";
-
-const prisma = new PrismaClient();
+import { supabase } from '@/lib/supabase';
+import { NextAuthOptions } from 'next-auth';
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
+    {
+      id: 'Credentials',
+      name: 'Credentials',
+      type: 'credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
+
+        const {
+          data: { user },
+        } = await supabase.auth.signInWithPassword({
+          email: credentials.email,
+          password: credentials.password,
         });
-        if (!user) {
-          return null;
-        }
-        const isPasswordValid = await compare(
-          credentials.password,
-          user.password
-        );
-        if (!isPasswordValid) {
-          return null;
-        }
+
         return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
+          id: user?.id ?? '',
+          email: user?.email ?? '',
+          name: user?.user_metadata.name ?? '',
         };
       },
-    }),
-    DiscordProvider({
-      clientId: process.env.CLIENT_ID as string,
-      clientSecret: process.env.CLIENT_SECRET as string,
-    }),
+    },
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
   callbacks: {
     async jwt({ token, user }) {

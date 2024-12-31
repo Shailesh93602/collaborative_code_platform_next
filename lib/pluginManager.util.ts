@@ -1,8 +1,8 @@
-import { Plugin, PluginContext } from "@/types/plugin";
+import { Plugin, PluginContext } from '@/types/plugin';
 
 class PluginManager {
-  private plugins: Map<string, Plugin> = new Map();
-  private hooks: Map<string, Set<(...args: any[]) => any>> = new Map();
+  private readonly plugins: Map<string, Plugin> = new Map();
+  private readonly hooks: Map<string, Set<(...args: any[]) => any>> = new Map();
 
   private createPluginContext(pluginId: string): PluginContext {
     return {

@@ -16,7 +16,11 @@ To obtain a JWT token, use the /api/auth/login endpoint.
 
 ## Base URL
 
-All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v1\`
+All API endpoints are relative to: `https://api.collaborativecodeplatform.com/v1`
+
+## Rate Limiting
+
+API requests are rate limited to 100 requests per 15-minute window per IP address. If you exceed this limit, you'll receive a 429 Too Many Requests response with the message "Too many requests from this IP, please try again later."
 
 ## Endpoints
 
@@ -24,8 +28,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Login
 
-- **URL**: \`/auth/login\`
-- **Method**: \`POST\`
+- **URL**: `/auth/login`
+- **Method**: `POST`
 - **Body**:
   \`\`\`json
   {
@@ -49,8 +53,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Get All Projects
 
-- **URL**: \`/projects\`
-- **Method**: \`GET\`
+- **URL**: `/projects`
+- **Method**: `GET`
 - **Response**:
   \`\`\`json
   {
@@ -67,8 +71,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Create Project
 
-- **URL**: \`/projects\`
-- **Method**: \`POST\`
+- **URL**: `/projects`
+- **Method**: `POST`
 - **Body**:
   \`\`\`json
   {
@@ -90,8 +94,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Get Project Files
 
-- **URL**: \`/projects/{project_id}/files\`
-- **Method**: \`GET\`
+- **URL**: `/projects/{project_id}/files`
+- **Method**: `GET`
 - **Response**:
   \`\`\`json
   {
@@ -109,8 +113,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Get File Content
 
-- **URL**: \`/projects/{project_id}/files/{file_id}/content\`
-- **Method**: \`GET\`
+- **URL**: `/projects/{project_id}/files/{file_id}/content`
+- **Method**: `GET`
 - **Response**:
   \`\`\`json
   {
@@ -120,8 +124,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Update File Content
 
-- **URL**: \`/projects/{project_id}/files/{file_id}/content\`
-- **Method**: \`PUT\`
+- **URL**: `/projects/{project_id}/files/{file_id}/content`
+- **Method**: `PUT`
 - **Body**:
   \`\`\`json
   {
@@ -143,8 +147,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Get Version History
 
-- **URL**: \`/projects/{project_id}/versions\`
-- **Method**: \`GET\`
+- **URL**: `/projects/{project_id}/versions`
+- **Method**: `GET`
 - **Response**:
   \`\`\`json
   {
@@ -164,8 +168,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Create New Version
 
-- **URL**: \`/projects/{project_id}/versions\`
-- **Method**: \`POST\`
+- **URL**: `/projects/{project_id}/versions`
+- **Method**: `POST`
 - **Body**:
   \`\`\`json
   {
@@ -195,8 +199,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Get Project Collaborators
 
-- **URL**: \`/projects/{project_id}/collaborators\`
-- **Method**: \`GET\`
+- **URL**: `/projects/{project_id}/collaborators`
+- **Method**: `GET`
 - **Response**:
   \`\`\`json
   {
@@ -213,8 +217,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Add Collaborator
 
-- **URL**: \`/projects/{project_id}/collaborators\`
-- **Method**: \`POST\`
+- **URL**: `/projects/{project_id}/collaborators`
+- **Method**: `POST`
 - **Body**:
   \`\`\`json
   {
@@ -236,8 +240,8 @@ All API endpoints are relative to: \`https://api.collaborativecodeplatform.com/v
 
 #### Execute Code
 
-- **URL**: \`/execute\`
-- **Method**: \`POST\`
+- **URL**: `/execute`
+- **Method**: `POST`
 - **Body**:
   \`\`\`json
   {
@@ -260,8 +264,8 @@ You can set up webhooks to receive real-time updates about events in your projec
 
 #### Create Webhook
 
-- **URL**: \`/projects/{project_id}/webhooks\`
-- **Method**: \`POST\`
+- **URL**: `/projects/{project_id}/webhooks`
+- **Method**: `POST`
 - **Body**:
   \`\`\`json
   {
@@ -279,10 +283,6 @@ You can set up webhooks to receive real-time updates about events in your projec
   }
   \`\`\`
 
-## Rate Limiting
-
-API requests are rate limited to 100 requests per minute per API key. If you exceed this limit, you'll receive a 429 Too Many Requests response.
-
 ## Errors
 
 The API uses conventional HTTP response codes to indicate the success or failure of an API request. In general:
@@ -291,8 +291,13 @@ The API uses conventional HTTP response codes to indicate the success or failure
 - Codes in the 4xx range indicate an error that failed given the information provided (e.g., a required parameter was omitted, etc.)
 - Codes in the 5xx range indicate an error with our servers
 
+Additionally:
+
+- 429: Too Many Requests - You have exceeded the rate limit
+
 ## Changelog
 
+- **2023-05-21**: Added rate limiting to all API endpoints
 - **2023-05-20**: Initial API documentation release
 
 ## Support

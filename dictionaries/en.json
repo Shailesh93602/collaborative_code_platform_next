@@ -1,0 +1,364 @@
+{
+    "aiAssistant": {
+        "errorFetchingSuggestion": "Error fetching Suggestion: {{error}}",
+        "queryPlaceholder": "Ask me anything...",
+        "submitQuery": "Submit Query",
+        "suggestion": "Suggestion",
+        "applySuggestion": "Apply Suggestion"
+    },
+    "api": {
+        "error": {
+            "databaseError": "Database error occurred",
+            "generalError": "An error occurred. Please try again.",
+            "invalidInput": "Invalid input data",
+            "notFound": "Resource not found",
+            "unauthorized": "Unauthorized access"
+        },
+        "success": {
+            "passwordReset": "Password reset successfully",
+            "projectCreated": "Project created successfully",
+            "projectDeleted": "Project deleted successfully",
+            "projectUpdated": "Project updated successfully",
+            "userRegistered": "User registered successfully"
+        }
+    },
+    "auth": {
+        "errors": {
+            "emailAlreadyInUse": "This email is already in use.",
+            "invalidCredentials": "Invalid email or password.",
+            "passwordMismatch": "Passwords do not match.",
+            "unexpectedError": "An unexpected error occurred. Please try again.",
+            "weakPassword": "Password is too weak. It should be at least 8 characters long and include a mix of letters, numbers, and symbols."
+        },
+        "login": {
+            "description": "Welcome back! Please login to your account.",
+            "emailLabel": "Email",
+            "passwordLabel": "Password",
+            "registerLink": "Don't have an account? Register",
+            "submitButton": "Login",
+            "title": "Login"
+        },
+        "register": {
+            "confirmPasswordLabel": "Confirm Password",
+            "description": "Create a new account to get started.",
+            "emailLabel": "Email",
+            "loginLink": "Already have an account? Login",
+            "nameLabel": "Name",
+            "passwordLabel": "Password",
+            "submitButton": "Register",
+            "title": "Register"
+        },
+        "resetPassword": {
+            "description": "Enter your email to receive a password reset link.",
+            "emailLabel": "Email",
+            "submitButton": "Send Reset Link",
+            "successMessage": "Password reset email sent. Please check your inbox.",
+            "title": "Reset Password"
+        },
+        "verifyEmail": {
+            "description": "Please check your email for a verification link.",
+            "instructions": "Once you've verified your email, you can start using your account.",
+            "title": "Verify Your Email"
+        }
+    },
+    "blockchainVersionControl": {
+        "blockchainVersionControlEncrypted": "Blockchain Version Control (Encrypted)",
+        "commitMessagePlaceholder": "Enter commit message",
+        "commitMessageRequired": "Commit message is required",
+        "encryptedVersionLoadedAndDecrypted": "Encrypted version loaded and decrypted successfully",
+        "encryptedVersionSaved": "Encrypted version saved successfully",
+        "enterCommitMessage": "Enter commit message",
+        "error": "Error",
+        "failedToLoadAndDecryptVersion": "Failed to load and decrypt version",
+        "failedToSaveEncryptedVersion": "Failed to save encrypted version",
+        "loading": "Loading...",
+        "openVersionControl": "Open version control",
+        "queueEncryptedSave": "Queue Encrypted Save",
+        "success": "Success",
+        "versionHistory": "Version History"
+    },
+    "codeExplainer": {
+        "codeExplanationAndDocumentation": "Code Explanation and Documentation",
+        "documentation": "Documentation",
+        "errorGeneratingExplanationAndDocumentation": "Error generating explanation and documentation:",
+        "explainCodePrompt": "Explain this code concisely",
+        "explanation": "Explanation",
+        "generateDocumentationPrompt": "Generate documentation for this code",
+        "generatingDocumentation": "Generating documentation...",
+        "generatingExplanation": "Generating explanation...",
+        "regenerate": "Regenerate"
+    },
+    "codeSnippetLibrary": {
+        "addNewSnippet": "Add New Snippet",
+        "addNewSnippetDescription": "Save commonly used code patterns for quick access",
+        "error": "Error",
+        "fetchSnippetsError": "Failed to fetch code snippets. Please try again.",
+        "pasteCodeHere": "Paste your code here",
+        "saveSnippet": "Save Snippet",
+        "saveSnippetError": "Failed to save code snippet. Please try again.",
+        "savedSnippets": "Saved Snippets",
+        "saving": "Saving...",
+        "snippetSaved": "Snippet Saved",
+        "snippetSavedDescription": "Your code snippet has been saved successfully.",
+        "snippetTitle": "Snippet Title",
+        "snippetUsed": "Snippet Used",
+        "snippetUsedDescription": "Snippet \"{{title}}\" inserted into editor.",
+        "useSnippet": "Use Snippet"
+    },
+    "collaborativeWhiteboard": {
+        "addCode": "Add Code",
+        "codeSnippetAdded": "Code snippet added",
+        "codeSnippetAddedDescription": "The code snippet has been added to the whiteboard.",
+        "collaborativeWhiteboard": "Collaborative Whiteboard",
+        "enterCodeSnippet": "Enter code snippet",
+        "eraser": "Eraser",
+        "pen": "Pen",
+        "text": "Text"
+    },
+    "common": {
+        "footer": {
+            "copyright": "© {{year}} Collaborative Code Platform. All rights reserved."
+        },
+        "general": {
+            "cancel": "Cancel",
+            "create": "Create",
+            "delete": "Delete",
+            "edit": "Edit",
+            "error": "Error",
+            "loading": "Loading...",
+            "save": "Save",
+            "submit": "Submit",
+            "success": "Successful"
+        },
+        "header": {
+            "logoutButton": "Log out",
+            "title": "Collaborative Code Platform"
+        },
+        "navigation": {
+            "codeEditor": "Code Editor",
+            "collaboration": "Collaboration",
+            "home": "Home",
+            "projects": "Projects",
+            "settings": "Settings"
+        }
+    },
+    "components": {
+        "codeEditor": {
+            "run": "Run",
+            "save": "Save",
+            "share": "Share"
+        },
+        "executionPanel": {
+            "clear": "Clear Console",
+            "error": "Error",
+            "output": "Output"
+        },
+        "header": {
+            "logoutButton": "Log out",
+            "title": "Collaborative Code Platform"
+        },
+        "languageSelector": {
+            "label": "Select Language"
+        },
+        "layoutCustomizer": {
+            "compact": "Compact Layout",
+            "default": "Default Layout",
+            "wide": "Wide Layout"
+        },
+        "themeSwitcher": {
+            "dark": "Dark Mode",
+            "light": "Light Mode",
+            "system": "System Preference"
+        },
+        "userProfile": {
+            "editProfile": "Edit Profile",
+            "followers": "Followers",
+            "following": "Following"
+        }
+    },
+    "csrf": {
+        "invalidCSRFToken": "Invalid CSRF token"
+    },
+    "errors": {
+        "api": {
+            "databaseError": "A database error occurred. Please try again.",
+            "invalidCSRFToken": "Invalid or missing CSRF token.",
+            "rateLimitExceeded": "Too many requests. Please try again later."
+        },
+        "apiError": "API Error: {{message}}",
+        "databaseError": "A database error occurred. Please try again.",
+        "defaultError": "An error occurred: {{message}}",
+        "general": {
+            "notFound": "The requested resource was not found.",
+            "unauthorized": "You are not authorized to perform this action.",
+            "unexpected": "An unexpected error occurred. Please try again."
+        },
+        "notFound": "The requested resource was not found.",
+        "unauthorized": "You are not authorized to perform this action.",
+        "unexpectedError": "An unexpected error occurred. Please try again.",
+        "validation": {
+            "invalidEmail": "Please enter a valid email address.",
+            "passwordMismatch": "Passwords do not match.",
+            "required": "This field is required.",
+            "weakPassword": "The password is too weak. It must be at least 8 characters long and include a mix of letters, numbers, and symbols."
+        },
+        "validationError": "Validation Error: {{message}}"
+    },
+    "header": "Collaborative Code Platform",
+    "inputValidation": {
+        "emailRequired": "Email is required",
+        "invalidEmail": "Invalid email",
+        "nameMinLength": "Name must be at least 2 characters",
+        "nameRequired": "Name is required",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "passwordRequired": "Password is required",
+        "passwordRequirements": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+        "validationError": "Validation error: {{errors}}"
+    },
+    "layoutCustomizer": {
+        "compactLayout": "Compact layout",
+        "defaultLayout": "Default layout",
+        "wideLayout": "Wide layout"
+    },
+    "loading": "Loading...",
+    "multiLanguageSupport": {
+        "customExpressionLabel": "Custom Expression",
+        "dataCountLabel": "Data Count",
+        "selectLanguage": "Select Language",
+        "title": "Multi-Language Support"
+    },
+    "pages": {
+        "home": {
+            "getStarted": "Get Started",
+            "welcome": "Welcome to the Collaborative Coding Platform"
+        },
+        "profile": {
+            "editButton": "Edit Profile",
+            "saveButton": "Save Changes",
+            "title": "User Profile"
+        },
+        "projectList": {
+            "createNew": "Create New Project",
+            "noProjects": "You don't have any projects yet.",
+            "title": "Your Projects"
+        }
+    },
+    "peerList": {
+        "active": "Active",
+        "connectedPeers": "Connected Peers",
+        "idle": "Idle",
+        "offline": "Offline"
+    },
+    "performanceProfiler": {
+        "areaChart": "Area Chart",
+        "barChart": "Bar Chart",
+        "cpuUsage": "CPU Usage (%)",
+        "errorExecutingCode": "Error executing code:",
+        "executionTime": "Execution Time (ms)",
+        "lineChart": "Line Chart",
+        "memoryUsage": "Memory Usage (MB)",
+        "optimizationPrompt": "Based on the following performance data, suggest optimizations for this code:\n\n{{performanceData}}\n\nCode:\n{{code}}",
+        "optimizationSuggestions": "Optimization Suggestions",
+        "performanceProfiler": "Performance Profiler",
+        "runProfilerToGenerateSuggestions": "Run the profiler to generate optimization suggestions.",
+        "selectChartType": "Select chart type",
+        "selectMetric": "Select metric",
+        "startProfiling": "Start Profiling",
+        "stopProfiling": "Stop Profiling"
+    },
+    "pluginManager": {
+        "errorLoadingPlugin": "Error loading plugin",
+        "errorUnloadingPlugin": "Error unloading plugin",
+        "loading": "Loading...",
+        "pluginLoaded": "Plugin loaded",
+        "pluginLoadedDescription": "The plugin has been loaded successfully.",
+        "pluginUnloaded": "Plugin unloaded",
+        "pluginUnloadedDescription": "The plugin has been unloaded successfully.",
+        "plugins": "Plugins",
+        "unknownError": "An unknown error occurred",
+        "unload": "Unload",
+        "version": "Version"
+    },
+    "projectImport": {
+        "enterGitHubUrl": "Enter the URL of the GitHub repository you want to import",
+        "githubUrlPlaceholder": "https://github.com/username/repo",
+        "importFailed": "Import Failed",
+        "importFailedDescription": "There was an error importing your project. Please try again.",
+        "importGitHubProject": "Import GitHub Project",
+        "importProject": "Import Project",
+        "importing": "Importing...",
+        "projectImported": "Project Imported",
+        "projectImportedDescription": "Successfully imported {{name}}"
+    },
+    "rateLimit": {
+        "tooManyRequests": "Too many requests from this IP, please try again later."
+    },
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "sortableList": {
+        "english": "English",
+        "gujarati": "Gujarati",
+        "hindi": "Hindi",
+        "selectLanguage": "Select Language",
+        "sortAscending": "Sort Ascending",
+        "sortDescending": "Sort Descending"
+    },
+    "themeSwitcher": {
+        "darkTheme": "Dark theme",
+        "lightTheme": "Light theme",
+        "systemTheme": "System theme"
+    },
+    "timelineDebugger": {
+        "codeAtStep": "Code at Step {{step}}",
+        "title": "Time-Travel Debugger",
+        "variables": "Variables"
+    },
+    "useOnboarding": {
+        "codeEditor": {
+            "description": "Use our powerful code editor to write and edit your code. It supports multiple languages and provides syntax highlighting.",
+            "title": "Code Editor"
+        },
+        "collaboration": {
+            "description": "Work together with your team in real-time. See others' cursors and changes as they happen.",
+            "title": "Collaboration Features"
+        },
+        "executionPanel": {
+            "description": "Run your code directly in the browser and see the output in real-time.",
+            "title": "Execution Panel"
+        },
+        "finish": "Finish",
+        "next": "Next",
+        "skipTutorial": "Skip Tutorial",
+        "visualizationStudio": {
+            "description": "Visualize your data with interactive charts and graphs.",
+            "title": "Visualization Studio"
+        },
+        "welcome": {
+            "description": "This platform allows you to write, execute, and collaborate on code in real-time.",
+            "title": "Welcome to the Collaborative Code Platform"
+        }
+    },
+    "userProfile": {
+        "logOut": "Log out",
+        "skills": "Skills",
+        "website": "Website"
+    },
+    "visualizationStudio": {
+        "barChart": "Bar Chart",
+        "chartTypeLabel": "Chart Type",
+        "customExpressionError": "Error in custom expression:",
+        "customExpressionLabel": "Custom Expression",
+        "customExpressionPlaceholder": "Custom expression (e.g., {...item, value3: item.value1 * 2})",
+        "dataCountLabel": "Number of Data Points",
+        "dataCountPlaceholder": "Number of data points",
+        "invalidCustomExpression": "Invalid custom expression. Please check your input.",
+        "lineChart": "Line Chart",
+        "noChartTypeSelected": "No chart type selected",
+        "scatterPlot": "Scatter Plot",
+        "selectChartType": "Select chart type",
+        "title": "Interactive Visualization Studio",
+        "value1": "Value 1",
+        "value2": "Value 2",
+        "values": "Values"
+    }
+}

@@ -1,4 +1,4 @@
-import { editor } from "monaco-editor";
+import { editor } from 'monaco-editor';
 
 export type EditorInstance = editor.IStandaloneCodeEditor;
 
@@ -17,4 +17,17 @@ export interface User {
   name: string;
   avatar?: string;
   status: string;
+}
+
+export interface CustomFile {
+  path: string;
+  content: string;
+}
+
+export interface Comment {
+  id?: string;
+  author: string;
+  content: string;
+  lineNumber?: number;
+  timestamp: number;
 }
