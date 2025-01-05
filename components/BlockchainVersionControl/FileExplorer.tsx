@@ -4,7 +4,12 @@ import { FileTree } from '@/components/FileTree';
 import { CustomFile } from '@/types/file';
 import { FileExplorerProps } from './types';
 
-export default function FileExplorer({ files, onFileSelect, onFilesUpdate }: FileExplorerProps) {
+export default function FileExplorer({
+  files,
+  onFileSelect,
+  onFilesUpdate,
+  dictionary,
+}: FileExplorerProps) {
   const fileTree = buildFileTree(files);
 
   const handleCreateFile = async (path: string, content: string) => {
@@ -32,7 +37,7 @@ export default function FileExplorer({ files, onFileSelect, onFilesUpdate }: Fil
 
   return (
     <div className="w-1/2">
-      <h3 className="text-sm font-medium mb-2">File Explorer</h3>
+      <h3 className="text-sm font-medium mb-2">{dictionary?.Text?.FileExplorer}</h3>
       <FileTree
         data={fileTree}
         onSelect={(file) => onFileSelect(file.path)}

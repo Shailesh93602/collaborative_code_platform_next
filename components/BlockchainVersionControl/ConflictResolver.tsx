@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
 import { Conflict, ConflictResolverProps } from './types';
 
-export default function ConflictResolver({ code }: ConflictResolverProps) {
+export default function ConflictResolver({ code, dictionary }: ConflictResolverProps) {
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
   const { resolveConflict } = useWeb3();
 
@@ -31,14 +31,19 @@ export default function ConflictResolver({ code }: ConflictResolverProps) {
 
   return (
     <div>
-      <h3 className="text-sm font-medium mb-2">Conflicts</h3>
+      <h3 className="text-sm font-medium mb-2">{dictionary?.Text?.Conflicts}</h3>
       {conflicts.map((conflict) => (
         <div key={conflict.id} className="flex items-center space-x-2 mb-2">
           <AlertTriangle className="h-4 w-4 text-yellow-500" />
           <span className="text-sm">
-            Conflict between versions {conflict.sourceVersion} and {conflict.targetVersion}
+            {dictionary?.Text?.ConflictsDescription?.replace(
+              '{{SOURCE}}',
+              conflict.sourceVersion
+            ).replace('{{TARGET}}', conflict.targetVersion)}
           </span>
-          <Button onClick={() => handleResolveConflict(conflict.id)}>Resolve</Button>
+          <Button onClick={() => handleResolveConflict(conflict.id)}>
+            {dictionary?.Button?.Resolve}
+          </Button>
         </div>
       ))}
     </div>

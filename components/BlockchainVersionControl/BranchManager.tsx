@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export default function BranchManager() {
+export default function BranchManager({ dictionary }: { readonly dictionary: any }) {
   const [branches, setBranches] = useState<string[]>([]);
   const [newBranchName, setNewBranchName] = useState('');
   const [currentBranch, setCurrentBranch] = useState('');
@@ -62,22 +62,24 @@ export default function BranchManager() {
 
   return (
     <div>
-      <h3 className="text-sm font-medium mb-2">Branch Manager</h3>
+      <h3 className="text-sm font-medium mb-2">{dictionary?.Text?.BranchManager}</h3>
       <div className="flex space-x-2 mb-2">
         <Input
-          placeholder="New branch name"
+          placeholder={dictionary?.Placeholder?.NewBranchName}
           value={newBranchName}
           onChange={(e) => setNewBranchName(e.target.value)}
         />
         <Button onClick={handleCreateBranch} disabled={!newBranchName}>
-          Create Branch
+          {dictionary?.Button?.CreateBranch}
         </Button>
       </div>
       <div>
-        <p className="text-sm mb-1">Current Branch: {currentBranch}</p>
+        <p className="text-sm mb-1">
+          {dictionary?.Text?.CurrentBranch} {currentBranch}
+        </p>
         <Select onValueChange={handleSwitchBranch} value={currentBranch}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Switch branch" />
+            <SelectValue placeholder={dictionary?.Placeholder?.SwitchBranch} />
           </SelectTrigger>
           <SelectContent>
             {branches.map((branch) => (

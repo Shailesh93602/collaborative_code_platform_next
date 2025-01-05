@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
-export default function EncryptionManager() {
+export default function EncryptionManager(dictionary: any) {
   const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export default function EncryptionManager() {
       }
     } catch (error) {
       console.error('Error initializing encryption key:', error);
-      setError('Failed to initialize encryption key. Please try again.');
+      setError(dictionary?.Errors?.InitializingEncryptionKey);
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +52,7 @@ export default function EncryptionManager() {
         return encryptedData;
       } catch (error) {
         console.error('Error encrypting data:', error);
-        setError('Failed to encrypt data. Please try again.');
+        setError(dictionary?.Errors?.EncryptingData);
         throw error;
       } finally {
         setIsLoading(false);
@@ -71,7 +71,7 @@ export default function EncryptionManager() {
         return decryptedData;
       } catch (error) {
         console.error('Error decrypting data:', error);
-        setError('Failed to decrypt data. Please try again.');
+        setError(dictionary?.Errors?.DecryptingData);
         throw error;
       } finally {
         setIsLoading(false);
@@ -90,7 +90,7 @@ export default function EncryptionManager() {
       setEncryptionKey(newKey);
     } catch (error) {
       console.error('Error regenerating encryption key:', error);
-      setError('Failed to regenerate encryption key. Please try again.');
+      setError(dictionary?.Errors?.RegeneratingEncryptionKey);
     } finally {
       setIsLoading(false);
     }
@@ -106,16 +106,20 @@ export default function EncryptionManager() {
   };
 }
 
-export function EncryptionStatus() {
-  const { encryptionKey, isLoading, error, regenerateKey } = EncryptionManager();
+export function EncryptionStatus({ dictionary }: { dictionary: any }) {
+  const { encryptionKey, isLoading, error, regenerateKey } = EncryptionManager(dictionary);
 
   return (
     <div className="space-y-2">
       <div className="flex items-center space-x-2">
-        <span>Encryption Status:</span>
+        <span>{dictionary?.Text?.EncryptionStatus}</span>
         {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-        {!isLoading && encryptionKey && <span className="text-green-500">Active</span>}{' '}
-        {!isLoading && !encryptionKey && <span className="text-red-500">Inactive</span>}
+        {!isLoading && encryptionKey && (
+          <span className="text-green-500">{dictionary?.Text?.Active}</span>
+        )}{' '}
+        {!isLoading && !encryptionKey && (
+          <span className="text-red-500">{dictionary?.Text?.Inactive}</span>
+        )}
       </div>
       {error && (
         <Alert variant="destructive">
@@ -123,7 +127,7 @@ export function EncryptionStatus() {
         </Alert>
       )}
       <Button onClick={regenerateKey} disabled={isLoading}>
-        Regenerate Encryption Key
+        {dictionary?.Button?.RegenerateKey}
       </Button>
     </div>
   );

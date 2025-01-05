@@ -21,3 +21,9 @@ console.log(message);`,
   python: `# Your Python code here
 print('Hello, World!')`,
 };
+
+export const API_NAVIGATION = {
+  ai: {
+    suggestions: '/api/ai-suggest',
+  },
+};

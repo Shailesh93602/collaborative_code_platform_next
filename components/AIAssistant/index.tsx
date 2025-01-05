@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AIAssistantProps } from './types';
+import { API_NAVIGATION } from '@/constants';
 
 export default function AIAssistant({
   code,
@@ -14,7 +15,7 @@ export default function AIAssistant({
 
   const handleQuerySubmit = async () => {
     try {
-      const response = await fetch('/api/ai-suggest', {
+      const response = await fetch(API_NAVIGATION.ai.suggestions, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, query, language }),
@@ -22,7 +23,7 @@ export default function AIAssistant({
       const result = await response.json();
       setSuggestion(result.suggestion);
     } catch (error) {
-      console.error(dictionary?.errorFetchingSuggestion?.replace('{{error}}', error));
+      console.error(dictionary?.Error.FetchingSuggestions?.replace('{{error}}', error));
     }
   };
 
@@ -31,15 +32,15 @@ export default function AIAssistant({
       <Input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={dictionary?.queryPlaceholder}
+        placeholder={dictionary?.Placeholder?.Query}
       />
-      <Button onClick={handleQuerySubmit}>{dictionary?.submitQuery}</Button>
+      <Button onClick={handleQuerySubmit}>{dictionary?.Button?.SubmitQuery}</Button>
       {suggestion && (
         <div>
-          <h3>{dictionary?.suggestion}</h3>
+          <h3>{dictionary?.Text?.Suggestion}</h3>
           <pre>{suggestion}</pre>
           <Button onClick={() => onSuggestionApply(suggestion)}>
-            {dictionary?.applySuggestion}
+            {dictionary?.Button?.ApplySuggestion}
           </Button>
         </div>
       )}

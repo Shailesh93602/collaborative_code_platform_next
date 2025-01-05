@@ -18,6 +18,7 @@ export default function ConfirmationDialog({
   onConfirm,
   title,
   description,
+  dictionary,
 }: ConfirmationDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -27,8 +28,8 @@ export default function ConfirmationDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Confirm</AlertDialogAction>
+          <AlertDialogCancel onClick={onClose}>{dictionary?.Button?.Cancel}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{dictionary?.Button?.Confirm}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

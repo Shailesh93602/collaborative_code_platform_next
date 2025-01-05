@@ -47,7 +47,7 @@ export default function BlockchainVersionControl({
   const { saveVersion, loadVersion } = useWeb3();
   const { toast } = useToast();
 
-  const commitMessageSchema = z.string().min(1, dictionary?.commitMessageRequired);
+  const commitMessageSchema = z.string().min(1, dictionary?.CommitMessageRequired);
 
   const validateCommitMessage = useCallback(
     (message: string) => {
@@ -74,11 +74,11 @@ export default function BlockchainVersionControl({
       await saveVersion(commitMessage, [{ path: selectedFile, content: encryptedData, keyId }]);
       setCommitMessage('');
       toast({
-        title: dictionary?.success,
-        description: dictionary?.encryptedVersionSaved,
+        title: dictionary?.Success,
+        description: dictionary?.EncryptedVersionSaved,
       });
     } catch (error: any) {
-      setError(dictionary?.failedToSaveEncryptedVersion);
+      setError(dictionary?.FailedToSaveEncryptedVersion);
       logError(error, 'blockChainVersionControl', { action: 'save', selectedFile });
     } finally {
       setIsLoading(false);
@@ -106,11 +106,11 @@ export default function BlockchainVersionControl({
           onCodeUpdate(decryptedContent);
         }
         toast({
-          title: dictionary?.success,
-          description: dictionary?.encryptedVersionLoadedAndDecrypted,
+          title: dictionary?.Success,
+          description: dictionary?.EncryptedVersionLoadedAndDecrypted,
         });
       } catch (error: any) {
-        setError(dictionary?.failedToLoadAndDecryptVersion);
+        setError(dictionary?.FailedToLoadAndDecryptVersion);
         logError(error, 'blockchainVersionControl', { action: 'load', hash, selectedFile });
       } finally {
         setIsLoading(false);
@@ -124,12 +124,12 @@ export default function BlockchainVersionControl({
       <DialogTrigger asChild>
         <Button variant="outline" size="icon">
           <GitBranch className="h-4 w-4" />
-          <span className="sr-only">{dictionary?.openVersionControl}</span>
+          <span className="sr-only">{dictionary?.OpenVersionControl}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>{dictionary?.blockchainVersionControlEncrypted}</DialogTitle>
+          <DialogTitle>{dictionary?.BlockchainVersionControlEncrypted}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           {error && (
@@ -138,8 +138,8 @@ export default function BlockchainVersionControl({
             </Alert>
           )}
           <div aria-live="polite" className="sr-only">
-            {isLoading && dictionary?.loading}
-            {error && `${dictionary?.error?.replace('{{error}}', error)}`}
+            {isLoading && dictionary?.Loading}
+            {error && `${dictionary?.Error?.replace('{{error}}', error)}`}
           </div>
           {isLoading ? (
             <div className="space-y-4">
@@ -156,14 +156,14 @@ export default function BlockchainVersionControl({
               <div className="flex space-x-2">
                 <div className="flex-grow">
                   <Input
-                    placeholder={dictionary?.commitMessagePlaceholder}
+                    placeholder={dictionary?.Placeholder?.CommitMessage}
                     value={commitMessage}
                     onChange={(e) => {
                       setCommitMessage(e.target.value);
                       validateCommitMessage(e.target.value);
                     }}
                     disabled={isLoading}
-                    aria-label={dictionary?.enterCommitMessage}
+                    aria-label={dictionary?.EnterCommitMessage}
                     aria-invalid={!!commitMessageError}
                     aria-describedby="commit-message-error"
                   />
@@ -185,7 +185,7 @@ export default function BlockchainVersionControl({
                       <Lock className="h-4 w-4 mr-2" />
                     </>
                   )}
-                  {dictionary?.queueEncryptedSave}
+                  {dictionary?.QueueEncryptedSave}
                 </Button>
               </div>
               <div className="flex space-x-4">
@@ -193,8 +193,9 @@ export default function BlockchainVersionControl({
                   files={files}
                   onFileSelect={setSelectedFile}
                   onFilesUpdate={onFilesUpdate}
+                  dictionary={dictionary}
                 />
-                <div role="region" aria-label={dictionary?.versionHistory}>
+                <div role="region" aria-label={dictionary?.VersionHistory}>
                   <VersionHistory
                     onLoad={handleLoad}
                     selectedFile={selectedFile}
@@ -203,81 +204,17 @@ export default function BlockchainVersionControl({
                   />
                 </div>
               </div>
-              <ConflictResolver code={code} />
+              <ConflictResolver code={code} dictionary={dictionary} />
               <TagManager />
-              <CommentSection />
-              <BranchManager />
+              <CommentSection dictionary={dictionary} />
+              <BranchManager dictionary={dictionary} />
               <VersionGraph />
-              <ExportButton />
-              <CodeReview code={code} selectedVersion={selectedFile} />
+              <ExportButton dictionary={dictionary} />
+              <CodeReview code={code} selectedVersion={selectedFile} dictionary={dictionary} />
             </>
           )}
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function VersionItem({
-  version,
-  isSelected,
-  onSelect,
-  onLoad,
-  onViewComments,
-  onRevert,
-  onReview,
-  isLoading,
-  dictionary,
-  lang,
-}: VersionItemProps) {
-  return (
-    <div className="flex justify-between items-center p-2 hover:bg-accent">
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={() => onSelect(version.hash)}
-        className="mr-2"
-      />
-      <span className="text-sm truncate flex-grow">{version.message}</span>
-      <div className="flex items-center space-x-2">
-        <span className="text-xs text-muted-foreground">
-          {formatRelativeDate(version.timestamp, new Date(), lang)}
-        </span>
-        {version.tags.map((tag, index) => (
-          <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-            {tag}
-          </span>
-        ))}
-        <Button variant="ghost" size="sm" onClick={() => onLoad(version.hash)} disabled={isLoading}>
-          <Upload className="h-4 w-4" />
-          <span className="sr-only">{dictionary?.loadVersion}</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onViewComments(version.hash)}
-          disabled={isLoading}
-        >
-          <MessageSquare className="h-4 w-4" />
-          <span className="sr-only">{dictionary?.viewComments}</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onRevert(version.hash)}
-          disabled={isLoading}
-        >
-          {dictionary?.revert}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onReview(version.hash)}
-          disabled={isLoading}
-        >
-          {dictionary?.review}
-        </Button>
-      </div>
-    </div>
   );
 }

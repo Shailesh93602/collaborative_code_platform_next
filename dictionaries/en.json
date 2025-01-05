@@ -1,10 +1,18 @@
 {
-    "aiAssistant": {
-        "errorFetchingSuggestion": "Error fetching Suggestion: {{error}}",
-        "queryPlaceholder": "Ask me anything...",
-        "submitQuery": "Submit Query",
-        "suggestion": "Suggestion",
-        "applySuggestion": "Apply Suggestion"
+    "AIAssistant": {
+        "Errors": {
+            "FetchingSuggestions": "Error fetching Suggestion: {{error}}"
+        },
+        "Placeholder": {
+            "Query": "Ask me anything..."
+        },
+        "Button": {
+            "SubmitQuery": "Submit Query",
+            "ApplySuggestion": "Apply Suggestion"
+        },
+        "Text": {
+            "Suggestion": "Suggestion"
+        }
     },
     "api": {
         "error": {
@@ -61,21 +69,63 @@
             "title": "Verify Your Email"
         }
     },
-    "blockchainVersionControl": {
-        "blockchainVersionControlEncrypted": "Blockchain Version Control (Encrypted)",
-        "commitMessagePlaceholder": "Enter commit message",
-        "commitMessageRequired": "Commit message is required",
-        "encryptedVersionLoadedAndDecrypted": "Encrypted version loaded and decrypted successfully",
-        "encryptedVersionSaved": "Encrypted version saved successfully",
-        "enterCommitMessage": "Enter commit message",
-        "error": "Error",
-        "failedToLoadAndDecryptVersion": "Failed to load and decrypt version",
-        "failedToSaveEncryptedVersion": "Failed to save encrypted version",
-        "loading": "Loading...",
-        "openVersionControl": "Open version control",
-        "queueEncryptedSave": "Queue Encrypted Save",
-        "success": "Success",
-        "versionHistory": "Version History"
+    "BlockchainVersionControl": {
+        "BlockchainVersionControlEncrypted": "Blockchain Version Control (Encrypted)",
+        "CommitMessageRequired": "Commit message is required",
+        "EncryptedVersionLoadedAndDecrypted": "Encrypted version loaded and decrypted successfully",
+        "EncryptedVersionSaved": "Encrypted version saved successfully",
+        "EnterCommitMessage": "Enter commit message",
+        "Error": "Error",
+        "FailedToLoadAndDecryptVersion": "Failed to load and decrypt version",
+        "FailedToSaveEncryptedVersion": "Failed to save encrypted version",
+        "Loading": "Loading...",
+        "OpenVersionControl": "Open version control",
+        "QueueEncryptedSave": "Queue Encrypted Save",
+        "Success": "Success",
+        "VersionHistory": "Version History",
+        "Placeholder": {
+            "NewBranchName": "New branch name",
+            "SwitchBranch": "Switch branch",
+            "ReviewComments": "Add review comments...",
+            "NewComment": "New comment",
+            "CommitMessage": "Enter commit message"
+        },
+        "Button": {
+            "CreateBranch": "Create Branch",
+            "AddReviewComments": "Add Review Comment",
+            "Approve": "Approve",
+            "Reject": "Reject",
+            "AddComment": "Add Comment",
+            "Cancel": "Cancel",
+            "Confirm": "Confirm",
+            "Resolve": "Resolve",
+            "RegenerateKey": "Regenerate Encryption Key",
+            "ExportHistory": "Export History"
+        },
+        "Text": {
+            "CurrentBranch": "Current Branch:",
+            "CodeReview": "Code Review",
+            "Comments": "Comments",
+            "CommentedBy": "By {{AUTHOR}} on {{DATE}}",
+            "BranchManager": "Branch Manager",
+            "Conflicts": "Conflicts",
+            "ConflictsDescription": "Conflict between versions {{SOURCE}} and {{TARGET}}",
+            "EncryptionStatus": "Encryption Status:",
+            "Active": "Active",
+            "Inactive": "Inactive",
+            "FileExplorer": "File Explorer"
+        },
+        "Errors": {
+            "FetchingReviewComments": "Failed to fetch review comments. Please try again.",
+            "AddingReviewComments": "Failed to add review comment. Please try again.",
+            "ApprovingVersion": "Failed to approve version. Please try again.",
+            "RejectingVersion": "Failed to reject version. Please try again.",
+            "InitializingEncryptionKey": "Failed to initialize encryption key. Please try again.",
+            "EncryptingData": "Failed to encrypt data. Please try again.",
+            "DecryptingData": "Failed to decrypt data. Please try again.",
+            "RegeneratingEncryptionKey": "Failed to regenerate encryption key. Please try again.",
+            "ExportingVersionHistory": "Failed to export version history. Please try again."
+        }
     },
     "codeExplainer": {
         "codeExplanationAndDocumentation": "Code Explanation and Documentation",

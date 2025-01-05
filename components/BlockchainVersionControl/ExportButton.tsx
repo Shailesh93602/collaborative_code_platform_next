@@ -6,7 +6,7 @@ import { Download, Loader2 } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export default function ExportButton() {
+export default function ExportButton({ dictionary }: { readonly dictionary: any }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { getAllVersions, getBranchNames, getCurrentBranch } = useWeb3();
@@ -31,7 +31,7 @@ export default function ExportButton() {
       saveAs(blob, 'version-history-export.json');
     } catch (error) {
       console.error('Error exporting data:', error);
-      setError('Failed to export version history. Please try again.');
+      setError(dictionary?.Errors?.ExportingVersionHistory);
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +52,7 @@ export default function ExportButton() {
       ) : (
         <Download className="h-4 w-4 mr-2" />
       )}
-      Export History
+      {dictionary?.Button?.ExportHistory}
     </Button>
   );
 }

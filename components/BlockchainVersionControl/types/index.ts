@@ -3,6 +3,7 @@ import { CustomFile } from '@/types/global';
 export interface CodeReviewProps {
   readonly code: string;
   readonly selectedVersion: string | null;
+  readonly dictionary: any;
 }
 
 export interface Comment {
@@ -12,11 +13,12 @@ export interface Comment {
 }
 
 export interface ConfirmationDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  description: string;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly onConfirm: () => void;
+  readonly title: string;
+  readonly description: string;
+  readonly dictionary: any;
 }
 
 export interface Conflict {
@@ -27,12 +29,14 @@ export interface Conflict {
 
 export interface ConflictResolverProps {
   readonly code: string;
+  readonly dictionary: any;
 }
 
 export interface FileExplorerProps {
   readonly files: CustomFile[];
   readonly onFileSelect: (path: string) => void;
   readonly onFilesUpdate: (files: CustomFile[]) => void;
+  readonly dictionary: any;
 }
 
 export interface Version {
