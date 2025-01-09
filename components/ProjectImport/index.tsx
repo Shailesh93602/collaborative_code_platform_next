@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Github } from 'lucide-react';
-import { useToast } from '@/hooks/useToast.hook';
+import { useToast } from '@/hooks/useToast';
 import { ProjectImportProps } from './types';
 
 export default function ProjectImport({ dictionary }: ProjectImportProps) {

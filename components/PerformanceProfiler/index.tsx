@@ -17,7 +17,7 @@ import {
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useAI } from '@/hooks/useAI.hook';
+import { useAI } from '@/hooks/useAI';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, StopCircle } from 'lucide-react';
 import {

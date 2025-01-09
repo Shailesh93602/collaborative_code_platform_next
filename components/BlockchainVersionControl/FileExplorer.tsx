@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { FileTree } from '@/components/FileTree';
-import { CustomFile } from '@/types/file';
+import { CustomFile } from '@/types/global';
 import { FileExplorerProps } from './types';
 
 export default function FileExplorer({

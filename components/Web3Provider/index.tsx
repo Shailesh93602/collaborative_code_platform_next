@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { BrowserProvider, JsonRpcSigner, Contract } from 'ethers';
-import { useToast } from '@/hooks/useToast.hook';
+import { useToast } from '@/hooks/useToast';
 
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/lib/contractConfig.util';
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from '@/lib/contractConfig';
 import { Web3ContextType } from './types';
 
 const Web3Context = createContext<Web3ContextType>({

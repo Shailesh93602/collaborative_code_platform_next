@@ -10,9 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useWeb3 } from '@/hooks/useWeb3.hook';
-import { GitBranch, Save, Lock, Loader2, Upload, MessageSquare } from 'lucide-react';
-import { useToast } from '@/hooks/useToast.hook';
+import { useWeb3 } from '@/hooks/useWeb3';
+import { GitBranch, Save, Lock, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
 import VersionHistory from './VersionHistory';
 import FileExplorer from './FileExplorer';
 import ConflictResolver from './ConflictResolver';
@@ -23,13 +23,11 @@ import VersionGraph from './VersionGraph';
 import ExportButton from './ExportButton';
 import CodeReview from './CodeReview';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { z } from 'zod';
-import { encrypt, decrypt } from '@/lib/encryption.util';
+import * as yup from 'yup';
+import { encrypt, decrypt } from '@/lib/encryption';
 import { logError } from '@/lib/errorHandling';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BlockchainVersionControlProps } from '@/types/components';
-import { formatRelativeDate } from '@/lib/dateUtils';
-import { VersionItemProps } from './types';
+import { BlockchainVersionControlProps } from '@/types/global';
 
 export default function BlockchainVersionControl({
   code,
@@ -47,17 +45,17 @@ export default function BlockchainVersionControl({
   const { saveVersion, loadVersion } = useWeb3();
   const { toast } = useToast();
 
-  const commitMessageSchema = z.string().min(1, dictionary?.CommitMessageRequired);
+  const commitMessageSchema = yup.string().min(1, dictionary?.CommitMessageRequired);
 
   const validateCommitMessage = useCallback(
     (message: string) => {
       try {
-        commitMessageSchema.parse(message);
+        commitMessageSchema.validate(message);
         setCommitMessageError(null);
         return true;
       } catch (error) {
-        if (error instanceof z.ZodError) {
-          setCommitMessageError(error.errors[0].message);
+        if (error instanceof yup.ValidationError) {
+          setCommitMessageError(error?.[0]?.message);
         }
         return false;
       }

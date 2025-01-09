@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/services/supabase';
 import { NextAuthOptions } from 'next-auth';
 
 export const authOptions: NextAuthOptions = {

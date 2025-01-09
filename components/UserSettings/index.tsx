@@ -14,8 +14,8 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form';
-import { useToast } from '@/hooks/useToast.hook';
-import { updateUserProfile } from '@/lib/api.util';
+import { useToast } from '@/hooks/useToast';
+import { updateUserProfile } from '@/lib/api';
 import TwoFactorAuth from '@/components/TwoFactorAuth/index';
 import { validateAndSanitizeInput } from '@/lib/inputValidation';
 import { yupResolver } from '@hookform/resolvers/yup';

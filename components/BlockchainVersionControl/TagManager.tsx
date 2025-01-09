@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useWeb3 } from '@/hooks/useWeb3.hook';
+import { useWeb3 } from '@/hooks/useWeb3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tag } from 'lucide-react';

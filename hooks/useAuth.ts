@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/services/supabase';
 import { User } from '@supabase/supabase-js';
 
 export function useAuth() {

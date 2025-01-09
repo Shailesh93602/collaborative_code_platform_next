@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useAI } from '@/hooks/useAI.hook';
+import { useAI } from '@/hooks/useAI';
 import { CodeExplainerProps } from './types';
 
 export default function CodeExplainer({ code, dictionary }: CodeExplainerProps) {

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/services/supabase';
 
 export default function VerifyEmailComponent({ dictionary }) {
   const router = useRouter();

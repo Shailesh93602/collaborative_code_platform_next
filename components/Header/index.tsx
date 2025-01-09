@@ -7,7 +7,7 @@ import LayoutCustomizer from '@/components/LayoutCustomizer';
 import { UserProfile } from '@/components/UserProfile';
 import { useSession } from 'next-auth/react';
 import { Code } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/services/supabase';
 import { useRouter } from 'next/navigation';
 import { HeaderProps } from './types';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
@@ -15,7 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import BlockchainVersionControl from '../BlockchainVersionControl';
 import { CustomFile } from '@/types/global';
 import { INITIAL_CODE } from '@/constants';
-import { useCollaboration } from '@/hooks/useCollaboration.hook';
+import { useCollaboration } from '@/hooks/useCollaboration';
 import PeerList from '../PeerList';
 
 export default function Header({ dictionaries, lang }: HeaderProps) {

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { useWeb3 } from '@/hooks/useWeb3.hook';
+import { useWeb3 } from '@/hooks/useWeb3';
 import * as d3 from 'd3';
 
 export default function VersionGraph() {
@@ -93,9 +93,9 @@ export default function VersionGraph() {
     });
 
     simulation
-      .force<d3.ForceLink<d3.SimulationNodeDatum, d3.SimulationLinkDatum<d3.SimulationNodeDatum>>>(
-        'link'
-      )!
+      .force<
+        d3.ForceLink<d3.SimulationNodeDatum, d3.SimulationLinkDatum<d3.SimulationNodeDatum>>
+      >('link')!
       .links(versions.filter((v) => v.parent).map((v) => ({ source: v.parent, target: v.hash })));
   };
 

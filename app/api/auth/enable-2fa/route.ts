@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth.util';
-import prisma from '@/lib/prisma.util';
+import { authOptions } from '@/lib/auth';
+import prisma from '@/lib/prisma';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
 import { handleApiError } from '@/lib/errorHandling';

@@ -5,8 +5,8 @@ import {
   fetchProjectData,
   updateProject,
   deleteProject,
-} from '@/lib/api.util';
-import { useToast } from '@/hooks/useToast.hook';
+} from '@/lib/api';
+import { useToast } from '@/hooks/useToast';
 
 export function useProjects() {
   const queryClient = useQueryClient();

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { useWeb3 } from '@/hooks/useWeb3.hook';
+import { useWeb3 } from '@/hooks/useWeb3';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DebugStep, TimelineDebuggerProps } from './types';
 

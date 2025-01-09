@@ -9,8 +9,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useAI } from '@/hooks/useAI.hook';
-import { MultiLanguageSupportProps } from '@/types/components';
+import { useAI } from '@/hooks/useAI';
+import { MultiLanguageSupportProps } from '@/types/global';
 import { LANGUAGES } from './constants';
 
 export default function MultiLanguageSupport({

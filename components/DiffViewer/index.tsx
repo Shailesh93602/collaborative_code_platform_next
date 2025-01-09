@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { diffLines, Change } from 'diff';
-import { useWeb3 } from '@/hooks/useWeb3.hook';
+import { useWeb3 } from '@/hooks/useWeb3';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DiffViewerProps } from './types';
 
@@ -46,8 +46,8 @@ export function DiffViewer({ versionHashes }: DiffViewerProps) {
               part.added
                 ? 'bg-green-100 text-green-800'
                 : part.removed
-                ? 'bg-red-100 text-red-800'
-                : 'bg-gray-50'
+                  ? 'bg-red-100 text-red-800'
+                  : 'bg-gray-50'
             } p-1`}
           >
             {part.value}

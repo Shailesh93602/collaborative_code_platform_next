@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth.util";
-import { prisma } from "@/lib/prisma.util";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
@@ -9,17 +9,14 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     const { code, files, projectId } = await request.json();
 
     if (!projectId) {
-      return NextResponse.json(
-        { error: "Project ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
     }
 
     // Check if the project exists and belongs to the user
@@ -31,10 +28,7 @@ export async function POST(request: Request) {
     });
 
     if (!project) {
-      return NextResponse.json(
-        { error: "Project not found or unauthorized" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Project not found or unauthorized' }, { status: 404 });
     }
 
     // Handle large files
@@ -56,7 +50,7 @@ export async function POST(request: Request) {
       await (prisma as any).projectFile.create({
         data: {
           projectId,
-          path: "metadata",
+          path: 'metadata',
           content: JSON.stringify({ chunks }),
         },
       });
@@ -88,12 +82,9 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json({ message: "Code and files saved successfully" });
+    return NextResponse.json({ message: 'Code and files saved successfully' });
   } catch (error) {
-    console.error("Error saving code:", error);
-    return NextResponse.json(
-      { error: "An error occurred while saving the code" },
-      { status: 500 }
-    );
+    console.error('Error saving code:', error);
+    return NextResponse.json({ error: 'An error occurred while saving the code' }, { status: 500 });
   }
 }

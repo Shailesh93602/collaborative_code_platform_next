@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useWeb3 } from "@/hooks/useWeb3.hook";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useWeb3 } from '@/hooks/useWeb3';
 
 interface Version {
   hash: string;
@@ -19,16 +19,12 @@ interface VersionControlContextType {
   refreshVersions: () => Promise<void>;
 }
 
-const VersionControlContext = createContext<
-  VersionControlContextType | undefined
->(undefined);
+const VersionControlContext = createContext<VersionControlContextType | undefined>(undefined);
 
 export const useVersionControl = () => {
   const context = useContext(VersionControlContext);
   if (context === undefined) {
-    throw new Error(
-      "useVersionControl must be used within a VersionControlProvider"
-    );
+    throw new Error('useVersionControl must be used within a VersionControlProvider');
   }
   return context;
 };
@@ -54,8 +50,8 @@ export const VersionControlProvider: React.FC<{
       setVersions(result.versions);
       setTotalPages(Math.ceil(result.total / VERSIONS_PER_PAGE));
     } catch (error) {
-      console.error("Error fetching versions:", error);
-      setError("Failed to fetch version history. Please try again.");
+      console.error('Error fetching versions:', error);
+      setError('Failed to fetch version history. Please try again.');
     } finally {
       setIsLoading(false);
     }

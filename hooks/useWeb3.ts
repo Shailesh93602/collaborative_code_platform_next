@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import { BrowserProvider, Contract, ethers } from 'ethers';
-import { CustomFile } from '@/types/file';
+import { CustomFile } from '@/types/global';
 
 const CONTRACT_ADDRESS = '0x1234567890123456789012345678901234567890'; // Replace with actual deployed contract address
 const CONTRACT_ABI = [

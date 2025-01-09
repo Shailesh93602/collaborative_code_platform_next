@@ -4,7 +4,7 @@ import { loadPyodide } from 'pyodide';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth.util';
+import { authOptions } from '@/lib/auth';
 import { ModuleKind } from 'typescript';
 
 const execAsync = promisify(exec);

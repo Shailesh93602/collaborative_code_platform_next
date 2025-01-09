@@ -20,14 +20,14 @@ import { CollaborationProvider, useCollaboration } from '@/components/Collaborat
 import { useProjectContext } from '@/contexts/ProjectContext.context';
 import UserOnboarding from '@/components/UserOnboarding';
 import PluginManager from '@/components/PluginManager';
-import { useToast } from '@/hooks/useToast.hook';
+import { useToast } from '@/hooks/useToast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Loading from '@/components/Loading/index';
 import ProjectImport from '@/components/ProjectImport';
 import CodeSnippetLibrary from '@/components/CodeSnippetLibrary';
 import { setLanguagePreference } from '@/lib/languagePreference';
-import { useProjects } from '@/hooks/useProjects.hook';
-import { supabase } from '@/lib/supabase';
+import { useProjects } from '@/hooks/useProjects';
+import { supabase } from '@/services/supabase';
 import { Session } from '@supabase/supabase-js';
 import { INITIAL_CODE } from '@/constants';
 

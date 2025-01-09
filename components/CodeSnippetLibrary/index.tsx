@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/hooks/useToast.hook';
+import { useToast } from '@/hooks/useToast';
 import LanguageSelector from '@/components/LanguageSelector/index';
 import { CodeSnippetLibraryProps } from './types';
 import { CodeSnippet } from '@prisma/client';

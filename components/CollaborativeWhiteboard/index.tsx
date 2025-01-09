@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Canvas, Path, Text } from 'fabric';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/useToast.hook';
+import { useToast } from '@/hooks/useToast';
 import io, { Socket } from 'socket.io-client';
 import { debounce } from 'lodash';
 import { CollaborativeWhiteboardProps, WhiteboardObject } from './types';

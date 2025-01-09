@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/services/supabase';
 import { nameSchema, emailSchema, passwordSchema } from '@/lib/inputValidation';
 
 const schema = yup.object().shape({

@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { pluginManager } from '@/lib/pluginManager.util';
+import { pluginManager } from '@/lib/pluginManager';
 import { Plugin } from '@/types/plugin';
-import { useToast } from '@/hooks/useToast.hook';
+import { useToast } from '@/hooks/useToast';
 import { PluginManagerProps } from './types';
 
 export default function PluginManager({ dictionary }: PluginManagerProps) {

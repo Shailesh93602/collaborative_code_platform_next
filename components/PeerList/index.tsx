@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useCollaboration } from '@/hooks/useCollaboration.hook';
+import { useCollaboration } from '@/hooks/useCollaboration';
 import { User } from '@/types/global';
 import { Users } from 'lucide-react';
 import { PeerListProps } from './types';

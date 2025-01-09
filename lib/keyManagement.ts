@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { promisify } from 'util';
-import prisma from '@/lib/prisma.util';
+import prisma from '@/lib/prisma';
 
 const randomBytes = promisify(crypto.randomBytes);
 
